@@ -48,8 +48,8 @@ class Air: # A empty tile
 
     tileNum = 0
 
-    def playerInteraction(self, player): # The player can move thorugh the block
-        pass
+    def playerInteraction(self): # The player can move thorugh the block
+        return True
 
     def laserInteraction(self, laser): # The laser can move through the block
         pass
@@ -62,8 +62,8 @@ class Block: # A block tile
 
     tileNum = 1
 
-    def playerInteraction(self, player): # The player cant move thorugh the block
-        pass
+    def playerInteraction(self): # The player cant move thorugh the block
+        return False
 
     def laserInteraction(self, laser): # The laser cant move through the block
         pass
@@ -76,8 +76,8 @@ class Glass: # A tile where light can go through but players cant
 
     tileNum = 2
 
-    def playerInteraction(self, player): # The player cant move thorugh the block
-        pass
+    def playerInteraction(self): # The player cant move thorugh the block
+        return False
 
     def laserInteraction(self, laser): # The laser can move through the block
         pass
@@ -90,8 +90,8 @@ class Smoke: # A tile where players can go through but light cant
 
     tileNum = 3
 
-    def playerInteraction(self, player): # The player can move thorugh the block
-        pass
+    def playerInteraction(self): # The player can move thorugh the block
+        return True
 
     def laserInteraction(self, laser): # The laser stops
         pass
@@ -107,8 +107,8 @@ class DoubleSidedMirror: # A tile that reflects lasers
     def __init__(self):
         self.direction = 0
 
-    def playerInteraction(self, player): # The player cant move thorugh the block
-        pass
+    def playerInteraction(self): # The player cant move thorugh the block
+        return False
 
     def laserInteraction(self, laser): # The laser changes direction by 90 degrees when interacting with this block
         pass
@@ -131,8 +131,8 @@ class OneSidedMirror: # A tile that reflects lasers
     def __init__(self):
         self.direction = 0
 
-    def playerInteraction(self, player): # The player cant move thorugh the block
-        pass
+    def playerInteraction(self): # The player cant move thorugh the block
+        return False
 
     def laserInteraction(self, laser): # The laser changes direction by 90 degrees when interacting with this block on the right side, ptherwise it gets stopped
         pass
@@ -161,8 +161,8 @@ class Target: # A tile that unlocks the door
 
         level.targetList.append(self)
 
-    def playerInteraction(self, player): # The player can(t?) move thorugh the block
-        pass
+    def playerInteraction(self): # The player can move thorugh the block
+        return True
 
     def laserInteraction(self, laser): # The laser cant move thorugh the block, but it activates the target
         pass
@@ -181,8 +181,8 @@ class Lever: # A empty tile
 
         self.targetBlocks = []
 
-    def playerInteraction(self, player): # The player can move thorugh the block
-        pass
+    def playerInteraction(self): # The player can move thorugh the block
+        return True
 
     def laserInteraction(self, laser): # The laser can move through the block
         pass
@@ -221,8 +221,8 @@ class LaserBeam:
     def __init__(self):
         self.direction = 0
 
-    def playerInteraction(self, player): # The player cant move through a laser beam block
-        pass
+    def playerInteraction(self): # The player cant move through a laser beam block
+        return False
 
     def laserInteraciton(self, laser): # The laser wont go through the laser beam block
         pass
@@ -249,8 +249,8 @@ class Entry:
 
     tileNum = 9
 
-    def playerInteraction(self, player): # The player cant move through an entry way
-        pass
+    def playerInteraction(self): # The player cant move through an entry way
+        return True
 
     def laserInteraciton(self, laser): # The laser wont go through the entry
         pass
@@ -263,7 +263,7 @@ class Exit:
 
     tileNum = 10
 
-    def playerInteraction(self, player): # The player can only interact with an exit after all the target blocks have been activated
+    def playerInteraction(self): # The player can only interact with an exit after all the target blocks have been activated
         done = False
 
         targetDone = 0
@@ -273,7 +273,10 @@ class Exit:
                 targetDone += 1
 
         if targetDone == len(level.targetList):
-            pass # code where player advances to the next level
+            return True
+        
+        else:
+            return False
 
     def laserInteraciton(self, laser): # The laser wont go through the exit
         pass
@@ -293,8 +296,8 @@ class Portal:
 
         self.direction = 0
 
-    def playerInteraction(self, player): # teleports player to the paired portal 
-        pass
+    def playerInteraction(self): # teleports player to the paired portal 
+        return True
 
     def laserInteraction(self,laser): # teleports laser to the paired portal
         pass
@@ -316,11 +319,60 @@ class Portal:
             self.direction = 0
 
 tileList = [Air, Block, Glass, Smoke, DoubleSidedMirror, OneSidedMirror, Target, Lever, LaserBeam, Entry, Exit, Portal]
-tileColorList = [[255,255,255],[128,128,128],[200,200,200],[0,0,255],[0,0,128],[255,0,0],[165,42,42],[255,255,0],[0,128,0],[0,255,0],[255,0,255]]
 
 level = Level('Testing Level', 16, 16)
 
 selectedTile = 0
+
+def save():
+
+    import serverClass
+
+    levelServer = serverClass.Server('levelDB.db')
+
+    levelServer.deleteTable('levels')
+
+    levelServer.createTable('levels', ['ID','Name','xLength','yLength','BlockList'],['integer','text','integer','integer','text'],['primary key autoincrement','','','',''])
+
+    saveList = []
+
+    for x in range(len(level.tileList)):
+        smallList = []
+        for y in range(len(level.tileList[x])):
+            smallList.append(level.tileList[x][y].object)
+        saveList.append(smallList)
+
+    print(saveList)
+
+    levelServer.createRow('levels',['Name','BlockList'],[level.name,saveList])
+
+def load(number):
+    import serverClass
+
+    levelServer = serverClass.Server('levelDB.db')
+
+    levelServer.executeQuery(f'SELECT BlockList FROM levels where ID = {number};')
+
+    blockList = levelServer.cursor.fetchall()[0][0]
+
+    blockList = blockList[2:-2].split('], [')
+
+    for listnum in range(len(blockList)):
+        blockList[listnum] = blockList[listnum].split(', ')
+
+        for num in range(len(blockList[listnum])):
+            blockList[listnum][num] = Tile(object = int(blockList[listnum][num]))
+
+    level.tileList = blockList
+
+
+import serverClass
+
+levelServer = serverClass.Server('levelDB.db')
+
+maxLevels = levelServer.getTable('levels')
+
+loadSelect = 1
 
 while play == True:
 
@@ -336,6 +388,9 @@ while play == True:
     if selectedTile < len(tileList) - 1:
         rightBlockButton = pg.draw.rect(screen, [255, 255, 255], [width / 8 * 5, yPadding / 8, width / 16, yPadding / 4], 0, 5)
     
+    saveButton = pg.draw.rect(screen, [0,255,0], [width / 8 * 3, height - yPadding / 2, width / 16, yPadding / 4], 0, 5)
+    loadButton = pg.draw.rect(screen, [0,0,255], [width / 8 * 5, height - yPadding / 2, width / 16, yPadding / 4], 0, 5)
+
     blockList = []
     
     for xNum in range(len(level.tileList)):
@@ -358,6 +413,12 @@ while play == True:
             if selectedTile < len(tileList) - 1:
                 if rightBlockButton.collidepoint(event.pos):
                     selectedTile += 1
+
+            if saveButton.collidepoint(event.pos):
+                save()
+
+            elif loadButton.collidepoint(event.pos):
+                load(loadSelect)
 
             for x in range(len(blockList)):
                 for y in range(len(blockList[0])): 
