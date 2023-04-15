@@ -12,7 +12,7 @@ height = root.winfo_screenheight()
 
 root.quit()
 
-xPadding = 50
+xPadding = 0
 yPadding = 100
 
 gameWidth = width - xPadding * 2
@@ -29,24 +29,35 @@ class Player:
         self.health = 10
         self.isjummping = False
         self.falling = False
+        self.jumpStart = None
+        self.jumpAmount = 0
+        self.maxJump = 2
 
     def jump(self):
-        if self.isjummping is False:
+        if self.isjummping == False and self.falling == False:
             self.isjummping = True
 
+            self.jumpStart = int((playerRect.bottom - levelHeightPadding) / blockLength)
+
     def gravity(self): 
-        playerBottomLeft = [playerRect.bottomleft[0] - levelWidthPadding,playerRect.bottomleft[1] + 1]
-        playerBottomRight = [playerRect.bottomright[0] - levelWidthPadding,playerRect.bottomright[1] + 1]
+        playerBottomLeft = [playerRect.bottomleft[0] - levelWidthPadding,playerRect.bottomleft[1] - levelHeightPadding]
+        playerBottomRight = [playerRect.bottomright[0] - levelWidthPadding,playerRect.bottomright[1] - levelHeightPadding]
     
         leftBlockCoords = [int(playerBottomLeft[0] / blockLength), int(playerBottomLeft[1] / blockLength)]
         rightBlockCoords = [int(playerBottomRight[0] / blockLength), int(playerBottomRight[1] / blockLength)] 
 
-        self.falling = tileList[level.tileList[leftBlockCoords[0]][leftBlockCoords[1]].object].playerInteraction() or tileList[level.tileList[rightBlockCoords[0]][rightBlockCoords[1]].object].playerInteraction()
+        self.falling = tileList[level.tileList[leftBlockCoords[0]][leftBlockCoords[1]].object].playerInteraction() and tileList[level.tileList[rightBlockCoords[0]][rightBlockCoords[1]].object].playerInteraction()
 
         if self.falling == True and self.isjummping == False:
             player.y += 1
-        elif self.falling == False:
-            pass
+             
+        elif self.isjummping == True:
+            player.y -= 1
+
+            print(int((playerRect.bottom - levelHeightPadding) / blockLength))
+
+            if int((playerRect.bottom - levelHeightPadding) / blockLength) - self.jumpStart < self.jumpAmount:
+                self.isjummping = False 
 
 velocity = .5
 
@@ -56,13 +67,13 @@ level = Level('First Level',16,16)
 
 load(1, level)
 
-blockLength = min(height / len(level.tileList[0]), width / len(level.tileList))
+blockLength = min(gameHeight / len(level.tileList[0]), gameWidth / len(level.tileList))
 
 levelWidth = blockLength * len(level.tileList)
 levelHeight = blockLength * len(level.tileList[0])
 
-levelWidthPadding = (gameWidth - levelWidth) / 2
-levelHeightPadding = (gameHeight - levelHeight) / 2
+levelWidthPadding = ((gameWidth - levelWidth) / 2) + xPadding
+levelHeightPadding = ((gameHeight - levelHeight) / 2) + yPadding
 
 done = False
 
@@ -77,14 +88,9 @@ for xNum in range(len(level.tileList)):
             y = yNum
             break
 
-player = Player(xPadding + levelWidthPadding + (x * (levelWidth / len(level.tileList))), yPadding + levelHeightPadding + (y * (levelHeight / len(level.tileList[0]))))
+player = Player(`levelWidthPadding + (x * (levelWidth / len(level.tileList))), yPadding + levelHeightPadding + (y * (levelHeight / len(level.tileList[0]))))
 
 while run == True:
-    
-    for event in pg.event.get():
-        if event.type ==pg.QUIT:
-            run = False
-            quit()
 
     window.fill([0,0,0])
     #window.fill(225, 225, 225)
@@ -95,7 +101,7 @@ while run == True:
 
     for xNum in range(len(level.tileList)):
         for yNum in range(len(level.tileList[0])):
-            pg.draw.rect(window, tileList[level.tileList[xNum][yNum].object].color, [xPadding + levelWidthPadding + (xNum * (levelWidth / len(level.tileList))), yPadding + levelHeightPadding + (yNum * (levelHeight / len(level.tileList[0]))), blockLength, blockLength])
+            pg.draw.rect(window, tileList[level.tileList[xNum][yNum].object].color, [`levelWidthPadding + (xNum * (levelWidth / len(level.tileList))), yPadding + levelHeightPadding + (yNum * (levelHeight / len(level.tileList[0]))), blockLength, blockLength])
     
     playerSurface = pg.Surface([blockLength,blockLength])
 
@@ -106,15 +112,19 @@ while run == True:
 
     if keysPressed[pg.K_LEFT]:
         player.x -= velocity
-    elif keysPressed[pg.K_RIGHT]:
+    if keysPressed[pg.K_RIGHT]:
         player.x += velocity 
-    elif keysPressed[pg.K_SPACE]:
+    if keysPressed[pg.K_SPACE]:
         player.jump()
 
     for event in pg.event.get():
         if event.type == pg.KEYUP:
             if event.key == pg.K_ESCAPE:
                 run = False
+
+        if event.type ==pg.QUIT:
+            run = False
+            quit()
 
     pg.display.flip()
 

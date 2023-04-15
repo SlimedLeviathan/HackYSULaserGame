@@ -45,8 +45,6 @@ def save():
             smallList.append(level.tileList[x][y].object)
         saveList.append(smallList)
 
-    print(saveList)
-
     levelServer.createRow('levels',['Name','BlockList'],[level.name,saveList])
 
 import serverClass
