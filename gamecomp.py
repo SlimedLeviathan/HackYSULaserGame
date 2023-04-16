@@ -241,7 +241,10 @@ run = True
 
 level = Level(16,16)
 
-load(1, level)
+levelNumber = 1
+
+load(levelNumber, level)
+
 
 blockLength = min(gameHeight / len(level.tileList[0]), gameWidth / len(level.tileList))
 
@@ -265,6 +268,13 @@ for xNum in range(len(level.tileList)):
             break
 
 player = Player(levelWidthPadding + (x * (levelWidth / len(level.tileList))), levelHeightPadding + (y * (levelHeight / len(level.tileList[0]))))
+
+def Reset():
+
+    player.x = levelWidthPadding + (x * (levelWidth / len(level.tileList))) 
+    player.y = levelHeightPadding + (y * (levelHeight / len(level.tileList[0])))
+
+    load(levelNumber, level)
 
 while run == True:
 
