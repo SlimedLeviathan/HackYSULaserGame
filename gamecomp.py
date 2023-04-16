@@ -1,6 +1,6 @@
 import pygame
 pg = pygame
-from mainscreen import mainMenu, createButton, creatingLevel
+from mainscreen import mainMenu, createButton
 from neededCode import *
 
 window = pg.display.set_mode()

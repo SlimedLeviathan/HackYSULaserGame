@@ -66,9 +66,11 @@ def load(number, level):
 
     levelServer = serverClass.Server('levelDB.db')
 
-    levelServer.executeQuery(f'SELECT BlockList, PortalConnections, LeverConnections, laserBeams, targets, singleMir, doubleMir FROM levels where number = {number};')
+    print(levelServer.executeQuery(f'SELECT BlockList, PortalConnections, LeverConnections, laserBeams, targets, singleMir, doubleMir FROM levels where number = {number} order by ID asc;'))
     
-    results = levelServer.cursor.fetchall()[-1]
+    results = levelServer.cursor.fetchall()
+
+    results = results[-1]
 
     blockList = results[0]
 
@@ -135,11 +137,16 @@ def load(number, level):
         
         level.leverConnections = leverDict
 
+    targetDict = {}
     if targets != '{}':
         targets = targets[1:-1].split(', (')
         for num in range(len(targets)):
             targets[num] = targets[num][1:-8].split(', ')
-            level.targets.update({(int(targets[num][0]),int(targets[num][1])):Target()})
+            targetDict.update({(int(targets[num][0]),int(targets[num][1])):Target()})
+
+    level.targets = targetDict
+
+    laserDict = {}
 
     if laserBeams != '{}':
         laserBeams = laserBeams[2:-1].split(', (')
@@ -148,8 +155,12 @@ def load(number, level):
 
             coords = laserBeams[num][0].split(', ')
 
-            level.laserBeams.update({(int(coords[0]),int(coords[1])):LaserBeam(direction = int(laserBeams[num][1]))})
+            laserDict.update({(int(coords[0]),int(coords[1])):LaserBeam(direction = int(laserBeams[num][1]))})
 
+    level.laserBeams = laserDict
+
+
+    doubleMirDict = {}
     if doubleMir != '{}':
         doubleMir = doubleMir[2:-1].split(', (')
         for num in range(len(doubleMir)):
@@ -158,8 +169,10 @@ def load(number, level):
             coords = doubleMir[num][0].split(', ')
 
 
-            level.doubleMir.update({(int(coords[0]),int(coords[1])):LaserBeam(direction = int(doubleMir[num][1]))})
-
+            doubleMirDict.update({(int(coords[0]),int(coords[1])):DoubleSidedMirror(direction = int(doubleMir[num][1]))})
+    level.doubleMir = doubleMirDict
+    
+    singleMirDict = {}
     if singleMir != '{}':
         singleMir = singleMir[2:-1].split(', (')
         for num in range(len(singleMir)):
@@ -167,8 +180,8 @@ def load(number, level):
 
             coords = singleMir[num][0].split(', ')
 
-            level.singleMir.update({(int(coords[0]),int(coords[1])):LaserBeam(direction = int(singleMir[num][1]))})
-
+            singleMirDict.update({(int(coords[0]),int(coords[1])):OneSidedMirror(direction = int(singleMir[num][1]))})
+    level.singleMir = singleMirDict
 
 class Air: # A empty tile
 

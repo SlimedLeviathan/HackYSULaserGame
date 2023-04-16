@@ -35,11 +35,10 @@ font = pg.font.Font('freesansbold.ttf',32)
 
 play = True
 
-level = Level(16, 16)
 
 selectedTile = 0
 
-def save():
+def save(level, loadSelect):
 
     import serverClass
 
@@ -55,7 +54,19 @@ def save():
             smallList.append(level.tileList[x][y].object)
         saveList.append(smallList)
 
-    level.changeDicts()
+    targets = level.targets
+    laserBeams = level.laserBeams
+    singleMir = level.singleMir
+    doubleMir = level.doubleMir
+
+    for key, value in targets.items():
+        targets.update({key : False})
+    for key, value in laserBeams.items():
+        laserBeams.update({key : value.direction})
+    for key, value in singleMir.items():
+        singleMir.update({key : value.direction})
+    for key, value in doubleMir.items():
+        doubleMir.update({key : value.direction})
 
     levelServer.createRow('levels',['Number','BlockList','PortalConnections','LeverConnections','laserBeams','targets','singleMir','doubleMir'],[loadSelect,saveList,level.portalConnections,level.leverConnections,level.laserBeams,level.targets,level.singleMir,level.doubleMir])
 
@@ -192,17 +203,17 @@ def createLevel(screen):
             blockList.append(smallList)
 
         for key, value in level.portalConnections.items():
-            pg.draw.line(screen,[255,0,255],[xPadding + (key[0] * ((width - xPadding * 2)) / len(level.tileList)) + ((width - xPadding * 2) / len(level.tileList)) / 2, yPadding + (key[1] * ((height - yPadding * 2)) / len(level.tileList[0])) + ((height - yPadding * 2) / len(level.tileList[0])) / 2],[xPadding + (value[0] * ((width - xPadding * 2)) / len(level.tileList)) + ((width - xPadding * 2) / len(level.tileList)) / 2, yPadding + (value[1] * ((height - yPadding * 2)) / len(level.tileList[0])) + ((height - yPadding * 2) / len(level.tileList[0])) / 2])
+            pg.draw.line(screen,[255,0,255],[levelWidthPadding + (key[0] * ((width - levelWidthPadding * 2)) / len(level.tileList)) + ((width - levelWidthPadding * 2) / len(level.tileList)) / 2, levelHeightPadding + (key[1] * ((height - levelHeightPadding * 2)) / len(level.tileList[0])) + ((height - levelHeightPadding * 2) / len(level.tileList[0])) / 2],[levelWidthPadding + (value[0] * ((width - levelWidthPadding * 2)) / len(level.tileList)) + ((width - levelWidthPadding * 2) / len(level.tileList)) / 2, levelHeightPadding + (value[1] * ((height - levelHeightPadding * 2)) / len(level.tileList[0])) + ((height - levelHeightPadding * 2) / len(level.tileList[0])) / 2])
 
         for key, value in level.leverConnections.items():
 
-            pg.draw.line(screen,[255,255,255],[xPadding + (key[0] * ((width - xPadding * 2)) / len(level.tileList)) + ((width - xPadding * 2) / len(level.tileList)) / 2, yPadding + (key[1] * ((height - yPadding * 2)) / len(level.tileList[0])) + ((height - yPadding * 2) / len(level.tileList[0])) / 2],[xPadding + (value[0][0] * ((width - xPadding * 2)) / len(level.tileList)) + ((width - xPadding * 2) / len(level.tileList)) / 2, yPadding + (value[0][1] * ((height - yPadding * 2)) / len(level.tileList[0])) + ((height - yPadding * 2) / len(level.tileList[0])) / 2])
+            pg.draw.line(screen,[255,255,255],[levelWidthPadding + (key[0] * ((width - levelWidthPadding * 2)) / len(level.tileList)) + ((width - levelWidthPadding * 2) / len(level.tileList)) / 2, levelHeightPadding + (key[1] * ((height - levelHeightPadding * 2)) / len(level.tileList[0])) + ((height - levelHeightPadding * 2) / len(level.tileList[0])) / 2],[levelWidthPadding + (value[0][0] * ((width - levelWidthPadding * 2)) / len(level.tileList)) + ((width - levelWidthPadding * 2) / len(level.tileList)) / 2, levelHeightPadding + (value[0][1] * ((height - levelHeightPadding * 2)) / len(level.tileList[0])) + ((height - levelHeightPadding * 2) / len(level.tileList[0])) / 2])
             
             if connectingTile == False:
-                pg.draw.line(screen,[0,255,0],[xPadding + (value[0][0] * ((width - xPadding * 2)) / len(level.tileList)) + ((width - xPadding * 2) / len(level.tileList)) / 2, yPadding + (value[0][1] * ((height - yPadding * 2)) / len(level.tileList[0])) + ((height - yPadding * 2) / len(level.tileList[0])) / 2],[xPadding + (value[1][0] * ((width - xPadding * 2)) / len(level.tileList)) + ((width - xPadding * 2) / len(level.tileList)) / 2, yPadding + (value[1][1] * ((height - yPadding * 2)) / len(level.tileList[0])) + ((height - yPadding * 2) / len(level.tileList[0])) / 2])
+                pg.draw.line(screen,[0,255,0],[levelWidthPadding + (value[0][0] * ((width - levelWidthPadding * 2)) / len(level.tileList)) + ((width - levelWidthPadding * 2) / len(level.tileList)) / 2, levelHeightPadding + (value[0][1] * ((height - levelHeightPadding * 2)) / len(level.tileList[0])) + ((height - levelHeightPadding * 2) / len(level.tileList[0])) / 2],[levelWidthPadding + (value[1][0] * ((width - levelWidthPadding * 2)) / len(level.tileList)) + ((width - levelWidthPadding * 2) / len(level.tileList)) / 2, levelHeightPadding + (value[1][1] * ((height - levelHeightPadding * 2)) / len(level.tileList[0])) + ((height - levelHeightPadding * 2) / len(level.tileList[0])) / 2])
 
         if connectingTile == True:
-            pg.draw.line(screen,[0,255,0],[xPadding + (startConnectPos[0] * ((width - xPadding * 2)) / len(level.tileList)) + ((width - xPadding * 2) / len(level.tileList)) / 2, yPadding + (startConnectPos[1] * ((height - yPadding * 2)) / len(level.tileList[0])) + ((height - yPadding * 2) / len(level.tileList[0])) / 2],pg.mouse.get_pos())
+            pg.draw.line(screen,[0,255,0],[levelWidthPadding + (startConnectPos[0] * (levelWidth / len(level.tileList))) + ((width - levelWidthPadding * 2) / len(level.tileList)) / 2, levelHeightPadding + (startConnectPos[1] * (levelHeight / len(level.tileList[0])) + ((height - levelHeightPadding * 2) / len(level.tileList[0])) / 2)],pg.mouse.get_pos())
 
         for event in pg.event.get():
             if event.type == pg.KEYUP:
@@ -226,7 +237,7 @@ def createLevel(screen):
                     loadSelect += 1
 
                 elif saveButton.collidepoint(event.pos):
-                    save()
+                    save(level, loadSelect)
 
                 elif loadButton.collidepoint(event.pos):
                     load(loadSelect, level)
