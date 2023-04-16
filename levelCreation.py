@@ -123,6 +123,7 @@ def createLevel(screen):
     gameHeight = height - yPadding * 2
 
     font = pg.font.Font('freesansbold.ttf',32)
+    smallfont = pg.font.Font('freesansbold.ttf', 16)
 
     play = True
 
@@ -138,32 +139,46 @@ def createLevel(screen):
         screen.fill([0,0,0])
 
         if selectedTile > 0:
-            leftBlockButton = pg.draw.rect(screen, [255, 255, 255], [width / 8 * 3, yPadding / 8, width / 16, yPadding / 4], 0, 5)
+            leftBlockButton = pg.draw.rect(screen, tileList[selectedTile - 1].color, [width / 8 * 3, yPadding / 8, width / 16, yPadding / 4], 0, 5)
+            screen.blit(smallfont.render(tileList[selectedTile - 1].name, True, [255,255,255]), [width / 8 * 3, yPadding / 2])
         
         if placeTile == True:
             tileButton = pg.draw.rect(screen, tileList[selectedTile].color, [width / 8 * 4, yPadding / 8, width / 16, yPadding / 4], 0, 5)
         elif placeTile == False:
             tileButton = pg.draw.rect(screen, tileList[selectedTile].color, [width / 8 * 4, yPadding / 8, width / 16, yPadding / 4], 5, 5)
         
-        screen.blit(font.render(tileList[selectedTile].name, True, [255,255,255]), [width / 8 * 4, yPadding / 2])
+        screen.blit(font.render(tileList[selectedTile].name, True, [255,255,255]), [width / 8 * 4 - len(tileList[selectedTile].name) * 4, yPadding / 2])
 
         if selectedTile < len(tileList) - 1:
-            rightBlockButton = pg.draw.rect(screen, [255, 255, 255], [width / 8 * 5, yPadding / 8, width / 16, yPadding / 4], 0, 5)
+            rightBlockButton = pg.draw.rect(screen, tileList[selectedTile + 1].color, [width / 8 * 5, yPadding / 8, width / 16, yPadding / 4], 0, 5)
+            screen.blit(smallfont.render(tileList[selectedTile + 1].name, True, [255,255,255]), [width / 8 * 5, yPadding / 2])
         
+        descNum = 0
+        charactersPRow = 35
+
+        for num in range(int(len(tileList[selectedTile].description)/charactersPRow)):
+            screen.blit(smallfont.render(tileList[selectedTile].description[descNum * charactersPRow: (descNum + 1) * charactersPRow], True, [255,255,255]), [width / 8 * 6, yPadding / 8 + num * 20])
+            print(tileList[selectedTile].description[descNum * charactersPRow: (descNum + 1) * charactersPRow])
+            descNum += 1
+
+
+        screen.blit(smallfont.render(tileList[selectedTile].description[descNum * charactersPRow % len(tileList[selectedTile].description):], True, [255,255,255]), [width / 8 * 6, yPadding / 8 + (descNum) * 20])
+
         if connectTile == True:
             connectionButton = pg.draw.rect(screen, [0,255,0], [width / 8, yPadding / 8, width / 8, yPadding / 4], 0, 5)
         elif connectTile == False:
             connectionButton = pg.draw.rect(screen, [0,255,0], [width / 8, yPadding / 8, width / 8, yPadding / 4], 5, 5)
-        
+
         screen.blit(font.render('Connect Tiles', True, [255,255,255]), [width / 8 - len('Connect Tiles') * 3, yPadding / 8 - 2])
         
         saveButton = pg.draw.rect(screen, [0,255,0], [width / 8 * 3, height - yPadding / 2, width / 16, yPadding / 4], 0, 5)
+        screen.blit(smallfont.render(f'Save to File: {loadSelect}', True, [255,255,255]), [width / 8 * 3, height - yPadding / 2, width / 16, yPadding / 4])
         
         if loadSelect > 1:
             loadLeftButton = pg.draw.rect(screen, [0,0,255], [width / 8 * 4, height - yPadding / 2, width / 16, yPadding / 4], 0, 5)
         
         loadButton = pg.draw.rect(screen, [0,0,255], [width / 8 * 5, height - yPadding / 2, width / 16, yPadding / 4], 0, 5)
-        screen.blit(font.render(f'{loadSelect}', True, [255,255,255]), [width / 8 * 5 + width / 40, height - yPadding / 2 - 2])
+        screen.blit(smallfont.render(f'Load File: {loadSelect}', True, [255,255,255]), [width / 8 * 5, height - yPadding / 2])
         
         loadRightButton = pg.draw.rect(screen, [0,0,255], [width / 8 * 6, height - yPadding / 2, width / 16, yPadding / 4], 0, 5)
 

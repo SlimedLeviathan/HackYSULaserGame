@@ -356,6 +356,11 @@ while run == True:
     elif startMenu == False:
 
         while play == True:
+
+            soundtrack = pg.mixer.Sound('music.wav')
+            
+            soundtrack.play()
+
             for target in level.targets:
                 level.targets[target].active = False
 

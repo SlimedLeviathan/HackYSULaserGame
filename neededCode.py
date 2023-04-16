@@ -191,6 +191,8 @@ class Air: # A empty tile
 
     name = 'Air'
 
+    description = 'Everything can pass through this tile'
+
     color = [255,255,255]
 
     tileNum = 0
@@ -208,6 +210,8 @@ class Block: # A block tile
 
     name = 'Block'
 
+    description = 'Nothing can pass through this tile'
+
     color = [128,128,128]
 
     tileNum = 1
@@ -221,6 +225,8 @@ class Block: # A block tile
 class Glass: # A tile where light can go through but players cant
 
     name = 'Glass'
+
+    description = 'Only lasers can pass through this tile'
 
     color = [200,200,200]
 
@@ -243,6 +249,8 @@ class Smoke: # A tile where players can go through but light cant
 
     name = 'Smoke'
 
+    description = 'Only players can pass through this tile'
+
     color = [75,75,75]
 
     tileNum = 3
@@ -261,6 +269,8 @@ class DoubleSidedMirror: # A tile that reflects lasers
     image1.blit(pg.transform.scale(pg.image.load('Images\\doubleMir1.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
 
     name = 'DoubleSidedMirror'
+
+    description = 'Whener a laser is shot at this tile it will bounce at a 90 degree angle depending on which side the laser hits. Click to rotate this block after placing it.'
 
     color = [0,0,255]
 
@@ -295,6 +305,8 @@ class OneSidedMirror: # A tile that reflects lasers
 
     name = 'OneSidedMirror'
 
+    description = 'Lasers can only bounce of of one of this tiles sides. Click to rotate this block after placing it.'
+
     color = [0,0,128]
 
     tileNum = 5
@@ -328,6 +340,8 @@ class Target: # A tile that unlocks the door
 
     name = 'Target'
 
+    description = 'Shoot a laser at this tile to unlock the exit.'
+
     color = [255,0,0]
 
     tileNum = 6
@@ -350,6 +364,8 @@ class Lever: # A empty tile
     image.blit(pg.transform.scale(pg.image.load('Images\\lever.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
 
     name = 'Lever'
+
+    description = 'This block allows the player to move around tiles. Use the "Connect Tiles" button to connect the lever to a block and then where it goes to after the player clicks it.'
 
     color = [165,42,42]
 
@@ -408,6 +424,8 @@ class LaserBeam:
 
     name = 'LaserBeam'
 
+    description = 'Shoots a laser the direction it faces. Click to rotate this block after placing it.'
+
     color = [255,255,0]
 
     tileNum = 8
@@ -434,6 +452,8 @@ class LaserBeam:
 
 class Entry:
 
+    description = 'Where the player starts.'
+
     name = 'Entry'
 
     color = [0,128,0]
@@ -451,6 +471,8 @@ class Entry:
         laser.stop()
 
 class Exit:
+
+    description = 'Walk into this to finish the level, only unlocks after all targets have been shot by a laser.'
 
     name = 'Exit'
 
@@ -479,6 +501,8 @@ class Exit:
         laser.stop()
 
 class Portal:
+
+    description = 'Teleports players and lasers to its other paired portal. Use the "Connect Tiles" button to make one portal output to another.'
 
     image = pg.Surface([blockLength, blockLength])
     image.blit(pg.transform.scale(pg.image.load('Images\\portal.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
