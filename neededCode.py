@@ -1,3 +1,66 @@
+import pygame as pg
+import tkinter as tk
+
+root = tk.Tk()
+
+width = root.winfo_screenwidth()
+height = root.winfo_screenheight()
+
+root.quit()
+
+xPadding = 0
+yPadding = 50
+
+gameWidth = width - xPadding * 2
+gameHeight = height - yPadding * 2
+
+# I need to create a system where there is a grid of tiles
+# Each tile has its own actual tile that occupies its area
+class Tile:
+
+    def __init__(self, object = 0):
+        
+        # is an instance of a class
+        self.object = object
+
+class Level:
+
+    def __init__(self, xTiles, yTiles):
+
+        self.tileList = [[Tile() for _ in range(yTiles)] for _ in range(xTiles)]
+
+        self.laserList = []
+        self.laserSurface = pg.Surface([width, height], pg.SRCALPHA)
+
+        self.portalConnections = {}
+        self.leverConnections = {}
+
+        self.targets = {}
+        self.laserBeams = {}
+        self.singleMir = {}
+        self.doubleMir = {}
+
+    def changeDicts(self):
+
+        for key, value in self.targets.items():
+            self.targets.update({key : False})
+        for key, value in self.laserBeams.items():
+            self.laserBeams.update({key : value.direction})
+        for key, value in self.singleMir.items():
+            self.singleMir.update({key : value.direction})
+        for key, value in self.doubleMir.items():
+            self.doubleMir.update({key : value.direction})
+
+level = Level(16,16)
+
+blockLength = min(gameHeight / len(level.tileList[0]), gameWidth / len(level.tileList))
+
+levelWidth = blockLength * len(level.tileList)
+levelHeight = blockLength * len(level.tileList[0])
+
+levelWidthPadding = ((gameWidth - levelWidth) / 2) + xPadding
+levelHeightPadding = ((gameHeight - levelHeight) / 2) + yPadding
+
 def load(number, level):
     import serverClass
 
@@ -106,41 +169,12 @@ def load(number, level):
 
             level.singleMir.update({(int(coords[0]),int(coords[1])):LaserBeam(direction = int(singleMir[num][1]))})
 
-class Level:
-
-    def __init__(self, xTiles, yTiles):
-
-        self.tileList = [[Tile() for _ in range(yTiles)] for _ in range(xTiles)]
-
-        self.portalConnections = {}
-        self.leverConnections = {}
-
-        self.targets = {}
-        self.laserBeams = {}
-        self.singleMir = {}
-        self.doubleMir = {}
-
-    def changeDicts(self):
-
-        for key, value in self.targets.items():
-            self.targets.update({key : False})
-        for key, value in self.laserBeams.items():
-            self.laserBeams.update({key : value.direction})
-        for key, value in self.singleMir.items():
-            self.singleMir.update({key : value.direction})
-        for key, value in self.doubleMir.items():
-            self.doubleMir.update({key : value.direction})
-
-# I need to create a system where there is a grid of tiles
-# Each tile has its own actual tile that occupies its area
-class Tile:
-
-    def __init__(self, object = 0):
-        
-        # is an instance of a class
-        self.object = object
 
 class Air: # A empty tile
+
+    image = pg.Surface([blockLength, blockLength])
+    image.blit(pg.transform.scale(pg.image.load('Images\\air.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
+
 
     name = 'Air'
 
@@ -155,6 +189,9 @@ class Air: # A empty tile
         laser.move()
 
 class Block: # A block tile
+
+    image = pg.Surface([blockLength, blockLength])
+    image.blit(pg.transform.scale(pg.image.load('Images\\block.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
 
     name = 'Block'
 
@@ -174,6 +211,10 @@ class Glass: # A tile where light can go through but players cant
 
     color = [200,200,200]
 
+    image = pg.Surface([blockLength, blockLength])
+    image.blit(pg.transform.scale(pg.image.load('Images\\glass.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
+
+
     tileNum = 2
 
     def playerInteraction(level): # The player cant move thorugh the block
@@ -183,6 +224,9 @@ class Glass: # A tile where light can go through but players cant
         laser.move()
 
 class Smoke: # A tile where players can go through but light cant
+
+    image = pg.Surface([blockLength, blockLength])
+    image.blit(pg.transform.scale(pg.image.load('Images\\smoke.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
 
     name = 'Smoke'
 
@@ -198,6 +242,11 @@ class Smoke: # A tile where players can go through but light cant
 
 class DoubleSidedMirror: # A tile that reflects lasers
 
+    image0 = pg.Surface([blockLength, blockLength])
+    image1 = pg.Surface([blockLength, blockLength])
+    image0.blit(pg.transform.scale(pg.image.load('Images\\doubleMir0.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
+    image1.blit(pg.transform.scale(pg.image.load('Images\\doubleMir1.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
+
     name = 'DoubleSidedMirror'
 
     color = [0,0,255]
@@ -211,7 +260,6 @@ class DoubleSidedMirror: # A tile that reflects lasers
         return False
 
     def laserInteraction(laser): # The laser changes direction by 90 degrees when interacting with this block
-        print('double')
         laser.doubleMirror()
 
     def changeDirection(self):
@@ -222,6 +270,15 @@ class DoubleSidedMirror: # A tile that reflects lasers
             self.direction = 0
         
 class OneSidedMirror: # A tile that reflects lasers
+
+    image0 = pg.Surface([blockLength, blockLength])
+    image1 = pg.Surface([blockLength, blockLength])
+    image2 = pg.Surface([blockLength, blockLength])
+    image3 = pg.Surface([blockLength, blockLength])
+    image0.blit(pg.transform.scale(pg.image.load('Images\\singleMir0.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
+    image1.blit(pg.transform.scale(pg.image.load('Images\\singleMir1.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
+    image2.blit(pg.transform.scale(pg.image.load('Images\\singleMir2.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
+    image3.blit(pg.transform.scale(pg.image.load('Images\\singleMir3.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
 
     name = 'OneSidedMirror'
 
@@ -251,6 +308,11 @@ class OneSidedMirror: # A tile that reflects lasers
 
 class Target: # A tile that unlocks the door
 
+    image = pg.Surface([blockLength, blockLength])
+    activatedImage = pg.Surface([blockLength, blockLength])
+    image.blit(pg.transform.scale(pg.image.load('Images\\target.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
+    activatedImage.blit(pg.transform.scale(pg.image.load('Images\\targetActivated.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
+
     name = 'Target'
 
     color = [255,0,0]
@@ -266,7 +328,13 @@ class Target: # A tile that unlocks the door
     def laserInteraction(laser): # The laser cant move thorugh the block, but it activates the target
         laser.hitTarget()
 
+        image = pg.Surface([blockLength, blockLength])
+        image.blit(pg.transform.scale(pg.image.load('Images\\targetActivated.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
+
 class Lever: # A empty tile
+
+    image = pg.Surface([blockLength, blockLength])
+    image.blit(pg.transform.scale(pg.image.load('Images\\lever.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
 
     name = 'Lever'
 
@@ -316,6 +384,15 @@ class Lever: # A empty tile
 
 class LaserBeam:
 
+    image0 = pg.Surface([blockLength, blockLength])
+    image1 = pg.Surface([blockLength, blockLength])
+    image2 = pg.Surface([blockLength, blockLength])
+    image3 = pg.Surface([blockLength, blockLength])
+    image0.blit(pg.transform.scale(pg.image.load('Images\\laserBeam0.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
+    image1.blit(pg.transform.scale(pg.image.load('Images\\laserBeam1.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
+    image2.blit(pg.transform.scale(pg.image.load('Images\\laserBeam2.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
+    image3.blit(pg.transform.scale(pg.image.load('Images\\laserBeam3.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
+
     name = 'LaserBeam'
 
     color = [255,255,0]
@@ -348,6 +425,10 @@ class Entry:
 
     color = [0,128,0]
 
+    image = pg.Surface([blockLength, blockLength])
+    image.blit(pg.transform.scale(pg.image.load('Images\\entry.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
+
+
     tileNum = 9
 
     def playerInteraction(level): # The player can move through an entry way
@@ -361,6 +442,10 @@ class Exit:
     name = 'Exit'
 
     color = [0,255,0]
+
+    image = pg.Surface([blockLength, blockLength])
+    image.blit(pg.transform.scale(pg.image.load('Images\\exit.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
+
 
     tileNum = 10
 
@@ -381,6 +466,9 @@ class Exit:
         laser.stop()
 
 class Portal:
+
+    image = pg.Surface([blockLength, blockLength])
+    image.blit(pg.transform.scale(pg.image.load('Images\\portal.png'),[blockLength,blockLength]),[0,0,blockLength,blockLength])
 
     name = 'Portal'
 

@@ -1,21 +1,7 @@
 import pygame
 pg = pygame
-
+from mainscreen import mainMenu, createButton, creatingLevel
 from neededCode import *
-
-import tkinter as tk
-root = tk.Tk()
-
-width = root.winfo_screenwidth()
-height = root.winfo_screenheight()
-
-root.quit()
-
-xPadding = 0
-yPadding = 50
-
-gameWidth = width - xPadding * 2
-gameHeight = height - yPadding * 2
 
 window = pg.display.set_mode()
 Player_image = pg.image.load(r'Player_image.png')
@@ -37,19 +23,19 @@ class Laser:
 
         if direction == 0 and self.checkWalls() == True: # Up
             self.y -= 1
-            pg.draw.line(window, red, middlePoint, topPoint, 5)
+            level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, topPoint, 5))
             tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
         elif direction == 1 and self.checkWalls() == True: # Right
             self.x += 1
-            pg.draw.line(window, red, middlePoint, rightPoint, 5)
+            level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, rightPoint, 5))
             tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
         elif direction == 2 and self.checkWalls() == True: # Down
             self.y += 1
-            pg.draw.line(window, red, middlePoint, downPoint, 5)
+            level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, downPoint, 5))
             tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
         elif direction == 3 and self.checkWalls() == True: # Left
             self.x -= 1
-            pg.draw.line(window, red, middlePoint, leftPoint, 5)
+            level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, leftPoint, 5))
             tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
 
     def checkWalls(self):
@@ -75,27 +61,30 @@ class Laser:
         downPoint = [(levelWidthPadding + (self.x * (levelWidth / len(level.tileList))))+ blockLength / 2,(levelHeightPadding + (self.y * (levelWidth / len(level.tileList)))) + blockLength]
         leftPoint = [(levelWidthPadding + (self.x * (levelWidth / len(level.tileList)))),(levelHeightPadding + (self.y * (levelWidth / len(level.tileList)))) + blockLength / 2]
 
-        print(tileList[level.tileList[self.x][self.y].object])
-
         if self.direction == 0 and self.checkWalls() == True: # Up
             self.y -= 1
-            pg.draw.line(window, red, downPoint, topPoint, 5)
+            level.laserList.append(pg.draw.line(level.laserSurface, red, downPoint, topPoint, 5))
             tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
         elif self.direction == 1 and self.checkWalls() == True: # Right
             self.x += 1
-            pg.draw.line(window, red, leftPoint, rightPoint, 5)
+            level.laserList.append(pg.draw.line(level.laserSurface, red, leftPoint, rightPoint, 5))
             tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
         elif self.direction == 2 and self.checkWalls() == True: # Down
             self.y += 1
-            pg.draw.line(window, red, topPoint, downPoint, 5)
+            level.laserList.append(pg.draw.line(level.laserSurface, red, topPoint, downPoint, 5))
             tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
         elif self.direction == 3 and self.checkWalls() == True: # Left
             self.x -= 1
-            pg.draw.line(window, red, rightPoint, leftPoint, 5)
+            level.laserList.append(pg.draw.line(level.laserSurface, red, rightPoint, leftPoint, 5))
             tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
 
-
     def singleMirror(self):
+
+        middlePoint = [(levelWidthPadding + (self.x * (levelWidth / len(level.tileList)))) + blockLength / 2,(levelHeightPadding + (self.y * (levelWidth / len(level.tileList)))) + blockLength / 2]
+        topPoint = [(levelWidthPadding + (self.x * (levelWidth / len(level.tileList)))) + blockLength / 2,(levelHeightPadding + (self.y * (levelWidth / len(level.tileList))))]
+        rightPoint = [(levelWidthPadding + (self.x * (levelWidth / len(level.tileList)))) + blockLength,(levelHeightPadding + (self.y * (levelWidth / len(level.tileList))))+ blockLength / 2]
+        downPoint = [(levelWidthPadding + (self.x * (levelWidth / len(level.tileList))))+ blockLength / 2,(levelHeightPadding + (self.y * (levelWidth / len(level.tileList)))) + blockLength]
+        leftPoint = [(levelWidthPadding + (self.x * (levelWidth / len(level.tileList)))),(levelHeightPadding + (self.y * (levelWidth / len(level.tileList)))) + blockLength / 2]
 
         direction = level.singleMir[(self.x,self.y)].direction
 
@@ -103,64 +92,145 @@ class Laser:
             if self.direction == 1:
                 self.direction = 0
 
+                self.y -= 1
+                level.laserList.append(pg.draw.line(level.laserSurface, red, leftPoint, middlePoint, 5))
+                level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, topPoint, 5))
+                tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
+
             elif self.direction == 2:
                 self.direction = 3
+
+                self.x -= 1
+                level.laserList.append(pg.draw.line(level.laserSurface, red, topPoint, middlePoint, 5))
+                level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, leftPoint, 5))
+                tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
 
         elif direction == 1:
             if self.direction == 2:
                 self.direction = 1
 
+                self.x += 1
+                level.laserList.append(pg.draw.line(level.laserSurface, red, topPoint, middlePoint, 5))
+                level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, rightPoint, 5))
+                tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
+
             elif self.direction == 3:
                 self.direction = 0
+
+                self.y -= 1
+                level.laserList.append(pg.draw.line(level.laserSurface, red, rightPoint, middlePoint, 5))
+                level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, topPoint, 5))
+                tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
 
         elif direction == 2:
             if self.direction == 0:
                 self.direction = 1
+                
+                self.x += 1
+                level.laserList.append(pg.draw.line(level.laserSurface, red, downPoint, middlePoint, 5))
+                level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, rightPoint, 5))
+                tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
 
             elif self.direction == 3:
                 self.direction = 2
+
+                self.y += 1
+                level.laserList.append(pg.draw.line(level.laserSurface, red, rightPoint, middlePoint, 5))
+                level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, downPoint, 5))
+                tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
 
         elif direction == 3:
             if self.direction == 0:
                 self.direction = 3
 
+                self.x -= 1
+                level.laserList.append(pg.draw.line(level.laserSurface, red, downPoint, middlePoint, 5))
+                level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, leftPoint, 5))
+                tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
+
             elif self.direction == 1:
                 self.direction = 2
 
-        self.move()
+                self.y += 1
+                level.laserList.append(pg.draw.line(level.laserSurface, red, leftPoint, middlePoint, 5))
+                level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, downPoint, 5))
+                tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
 
     def doubleMirror(self):
-        direction = level.doubleMir[(self.x,self.y)].direction
 
-        print(direction)
+        middlePoint = [(levelWidthPadding + (self.x * (levelWidth / len(level.tileList)))) + blockLength / 2,(levelHeightPadding + (self.y * (levelWidth / len(level.tileList)))) + blockLength / 2]
+        topPoint = [(levelWidthPadding + (self.x * (levelWidth / len(level.tileList)))) + blockLength / 2,(levelHeightPadding + (self.y * (levelWidth / len(level.tileList))))]
+        rightPoint = [(levelWidthPadding + (self.x * (levelWidth / len(level.tileList)))) + blockLength,(levelHeightPadding + (self.y * (levelWidth / len(level.tileList))))+ blockLength / 2]
+        downPoint = [(levelWidthPadding + (self.x * (levelWidth / len(level.tileList))))+ blockLength / 2,(levelHeightPadding + (self.y * (levelWidth / len(level.tileList)))) + blockLength]
+        leftPoint = [(levelWidthPadding + (self.x * (levelWidth / len(level.tileList)))),(levelHeightPadding + (self.y * (levelWidth / len(level.tileList)))) + blockLength / 2]
+
+        direction = level.doubleMir[(self.x,self.y)].direction
 
         if direction == 0:
             if self.direction == 0:
                 self.direction = 1
 
+                self.x += 1
+                level.laserList.append(pg.draw.line(level.laserSurface, red, downPoint, middlePoint, 5))
+                level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, rightPoint, 5))
+                tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
+
             elif self.direction == 1:
                 self.direction = 0
+
+                self.y -= 1
+                level.laserList.append(pg.draw.line(level.laserSurface, red, leftPoint, middlePoint, 5))
+                level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, topPoint, 5))
+                tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
 
             elif self.direction == 2:
                 self.direction = 3
 
+                self.x -= 1
+                level.laserList.append(pg.draw.line(level.laserSurface, red, topPoint, middlePoint, 5))
+                level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, leftPoint, 5))
+                tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
+
             elif self.direction == 3:
                 self.direction = 2
+
+                self.y += 1
+                level.laserList.append(pg.draw.line(level.laserSurface, red, rightPoint, middlePoint, 5))
+                level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, downPoint, 5))
+                tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
 
         if direction == 1: 
             if self.direction == 0:
                 self.direction = 3
 
+                self.x -= 1
+                level.laserList.append(pg.draw.line(level.laserSurface, red, downPoint, middlePoint, 5))
+                level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, leftPoint, 5))
+                tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
+
             elif self.direction == 3:
                 self.direction = 0
+
+                self.y -= 1
+                level.laserList.append(pg.draw.line(level.laserSurface, red, rightPoint, middlePoint, 5))
+                level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, topPoint, 5))
+                tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
 
             elif self.direction == 2:
                 self.direction = 1
 
+                self.x += 1
+                level.laserList.append(pg.draw.line(level.laserSurface, red, topPoint, middlePoint, 5))
+                level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, rightPoint, 5))
+                tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
+
             elif self.direction == 1:
                 self.direction = 2
 
-        self.move()
+                self.y += 1
+                level.laserList.append(pg.draw.line(level.laserSurface, red, leftPoint, middlePoint, 5))
+                level.laserList.append(pg.draw.line(level.laserSurface, red, middlePoint, downPoint, 5))
+                tileList[level.tileList[self.x][self.y].object].laserInteraction(self)
 
     def portal(self):
 
@@ -197,8 +267,8 @@ class Player:
             self.jumpStart = int((playerRect.bottom - levelHeightPadding) / blockLength)
 
     def gravity(self): 
-        playerBottomLeft = [playerRect.bottomleft[0] - levelWidthPadding,playerRect.bottomleft[1] - levelHeightPadding]
-        playerBottomRight = [playerRect.bottomright[0] - levelWidthPadding,playerRect.bottomright[1] - levelHeightPadding]
+        playerBottomLeft = [playerRect.bottomleft[0] - levelWidthPadding,playerRect.bottomleft[1] - levelHeightPadding]            
+        playerBottomRight = [playerRect.bottomright[0] - levelWidthPadding,playerRect.bottomright[1] - levelHeightPadding]            
     
         leftBlockCoords = [int(playerBottomLeft[0] / blockLength), int(playerBottomLeft[1] / blockLength)]
         rightBlockCoords = [int(playerBottomRight[0] / blockLength), int(playerBottomRight[1] / blockLength)] 
@@ -206,10 +276,10 @@ class Player:
         self.falling = tileList[level.tileList[leftBlockCoords[0]][leftBlockCoords[1]].object].playerInteraction(level) and tileList[level.tileList[rightBlockCoords[0]][rightBlockCoords[1]].object].playerInteraction(level)
 
         if self.falling == True and self.isjummping == False:
-            player.y += 1
+            player.y += velocity
              
         elif self.isjummping == True:
-            player.y -= 1
+            player.y -= velocity
 
             currentHeight = int((playerRect.bottom - levelHeightPadding) / blockLength)
             
@@ -235,101 +305,161 @@ class Player:
             if self.teleporting == True:
                 self.teleporting = False
 
-velocity = .5
+velocity = 5
 
 run = True
 
 level = Level(16,16)
 
-levelNumber = 1
-
-load(levelNumber, level)
-
-
-blockLength = min(gameHeight / len(level.tileList[0]), gameWidth / len(level.tileList))
-
-levelWidth = blockLength * len(level.tileList)
-levelHeight = blockLength * len(level.tileList[0])
-
-levelWidthPadding = ((gameWidth - levelWidth) / 2) + xPadding
-levelHeightPadding = ((gameHeight - levelHeight) / 2) + yPadding
+levelNumber = None
 
 done = False
 
 for xNum in range(len(level.tileList)):
-    if done == True:
-        break
-
-    for yNum in range(len(level.tileList[xNum])):
-        if level.tileList[xNum][yNum].object == 9:
-            done = True
-            x = xNum
-            y = yNum
+        if done == True:
             break
 
-player = Player(levelWidthPadding + (x * (levelWidth / len(level.tileList))), levelHeightPadding + (y * (levelHeight / len(level.tileList[0]))))
+        for yNum in range(len(level.tileList[xNum])):
+            if tileList[level.tileList[xNum][yNum].object] == Entry:
+                done = True
+                x = xNum
+                y = yNum
+                break
 
 def Reset():
 
-    player.x = levelWidthPadding + (x * (levelWidth / len(level.tileList))) 
-    player.y = levelHeightPadding + (y * (levelHeight / len(level.tileList[0])))
-
+    done = False
+    
     load(levelNumber, level)
+    
+    for xNum in range(len(level.tileList)):
+        for yNum in range(len(level.tileList[xNum])):
+            if tileList[level.tileList[xNum][yNum].object] == Entry:
+                x = xNum
+                y = yNum
+                global player
+                player = Player(levelWidthPadding + (x * (levelWidth / len(level.tileList))), levelHeightPadding + (y * (levelHeight / len(level.tileList[0]))))
+
+startMenu = True
 
 while run == True:
+    play = True
+    if startMenu == True:
 
-    for target in level.targets:
-        level.targets[target].active = False
+        levelNumber = mainMenu(window)
+        
+        if levelNumber != None:
+            startMenu = False
 
-    window.fill([0,0,0])
+            Reset()
 
-    keysPressed = pg.key.get_pressed()
+    elif startMenu == False:
 
-    jumpingCount = 2
+        while play == True:
+            for target in level.targets:
+                level.targets[target].active = False
 
-    for xNum in range(len(level.tileList)):
-        for yNum in range(len(level.tileList[0])):
-            pg.draw.rect(window, tileList[level.tileList[xNum][yNum].object].color, [levelWidthPadding + (xNum * (levelWidth / len(level.tileList))), levelHeightPadding + (yNum * (levelHeight / len(level.tileList[0]))), blockLength, blockLength])
-    
-    playerRect = window.blit(pg.transform.scale(Player_image, [blockLength, blockLength]), (player.x, player.y))
+            level.laserSurface = pg.Surface([width,height],pg.SRCALPHA)
 
-    player.gravity()
+            level.laserList = []
 
-    if keysPressed[pg.K_LEFT] and tileList[level.tileList[int((playerRect.left - levelWidthPadding) / blockLength)][int((playerRect.bottom - levelHeightPadding) / blockLength) - 1].object].playerInteraction(level) and int((playerRect.right - levelWidthPadding) / blockLength) > 0:
-        player.x -= velocity
+            window.fill([0,0,0])
 
-    if keysPressed[pg.K_RIGHT] and tileList[level.tileList[int((playerRect.right - levelWidthPadding) / blockLength)][int((playerRect.bottom - levelHeightPadding) / blockLength) - 1].object].playerInteraction(level) and int((playerRect.right - levelWidthPadding + 1) / blockLength) <= len(level.tileList) - 1:
-        player.x += velocity
+            keysPressed = pg.key.get_pressed()
 
-    if keysPressed[pg.K_SPACE]:
-        player.jump()
+            if keysPressed[pg.K_LEFT] and tileList[level.tileList[int((playerRect.left - levelWidthPadding) / blockLength)][int((playerRect.bottom - levelHeightPadding) / blockLength) - 1].object].playerInteraction(level) and int((playerRect.right - levelWidthPadding) / blockLength) > 0:
+                player.x -= velocity
 
-    playerCenter = [playerRect.center[0] - levelWidthPadding,playerRect.center[1] - levelHeightPadding]
-    centerCoords = [int(playerCenter[0] / blockLength), int(playerCenter[1] / blockLength)]
+            if keysPressed[pg.K_RIGHT] and tileList[level.tileList[int((playerRect.right - levelWidthPadding) / blockLength)][int((playerRect.bottom - levelHeightPadding) / blockLength) - 1].object].playerInteraction(level) and int((playerRect.right - levelWidthPadding + 2) / blockLength) <= len(level.tileList) - 1:
+                player.x += velocity
 
-    for key,value in level.laserBeams.items():
-        Laser(key[0],key[1], value.direction)
+            if keysPressed[pg.K_SPACE]:
+                player.jump()
 
-    if keysPressed[pg.K_e] and tileList[level.tileList[centerCoords[0]][centerCoords[1]].object] == Lever:
-        value = level.leverConnections[(centerCoords[0],centerCoords[1])]
+            for key,value in level.laserBeams.items():
+                Laser(key[0],key[1], value.direction)
 
-        if player.flippingLever == False:
-            Lever.flipLever(level, value[0],value[1],value[1][2])
-            player.flippingLever = True
+            for xNum in range(len(level.tileList)):
+                for yNum in range(len(level.tileList[0])):
+                    if tileList[level.tileList[xNum][yNum].object] == OneSidedMirror or tileList[level.tileList[xNum][yNum].object] == DoubleSidedMirror or tileList[level.tileList[xNum][yNum].object] == LaserBeam:
+                        if tileList[level.tileList[xNum][yNum].object] == OneSidedMirror:
+                            direction = level.singleMir[(xNum,yNum)].direction
 
-    else:
-        player.flippingLever = False
+                        elif tileList[level.tileList[xNum][yNum].object] == DoubleSidedMirror:
+                            direction = level.doubleMir[(xNum,yNum)].direction
+                            
+                        elif tileList[level.tileList[xNum][yNum].object] == LaserBeam:
+                            direction = level.laserBeams[(xNum,yNum)].direction
+                        
+                        if direction == 0:
+                            image = tileList[level.tileList[xNum][yNum].object].image0
+                        elif direction == 1:
+                            image = tileList[level.tileList[xNum][yNum].object].image1
+                        elif direction == 2:
+                            image = tileList[level.tileList[xNum][yNum].object].image2
+                        elif direction == 3:
+                            image = tileList[level.tileList[xNum][yNum].object].image3
 
-    for event in pg.event.get():
-        if event.type == pg.KEYUP:
-            if event.key == pg.K_ESCAPE:
-                run = False
+                    elif tileList[level.tileList[xNum][yNum].object] == Target:
+                        targetActive = level.targets[xNum,yNum].active
 
-        if event.type == pg.QUIT:
-            run = False
-            quit()
+                        if targetActive == True:
+                            image = tileList[level.tileList[xNum][yNum].object].activatedImage
 
-    pg.display.flip()
+                        else:
+                            image = tileList[level.tileList[xNum][yNum].object].image
+                        
+                    else:
+                        image = tileList[level.tileList[xNum][yNum].object].image
+
+                    pg.rect.Rect([levelWidthPadding + (xNum * (levelWidth / len(level.tileList))), levelHeightPadding + (yNum * (levelHeight / len(level.tileList[0]))), blockLength, blockLength])
+                    window.blit(image, [levelWidthPadding + (xNum * (levelWidth / len(level.tileList))), levelHeightPadding + (yNum * (levelHeight / len(level.tileList[0]))), blockLength, blockLength])
+
+            playerRect = window.blit(pg.transform.scale(Player_image, [blockLength, blockLength]), (player.x, player.y))
+
+            playerCenter = [playerRect.center[0] - levelWidthPadding,playerRect.center[1] - levelHeightPadding]
+            centerCoords = [int(playerCenter[0] / blockLength), int(playerCenter[1] / blockLength)]
+            
+            player.gravity()
+
+            for laser in level.laserList:
+                window.blit(level.laserSurface,[0,0,width,height])
+            
+            if keysPressed[pg.K_e] and tileList[level.tileList[centerCoords[0]][centerCoords[1]].object] == Lever:
+                value = level.leverConnections[(centerCoords[0],centerCoords[1])]
+
+                if player.flippingLever == False:
+                    Lever.flipLever(level, value[0],value[1],value[1][2])
+                    player.flippingLever = True
+
+            else:
+                player.flippingLever = False
+
+            if tileList[level.tileList[centerCoords[0]][centerCoords[1]].object] == Exit:
+                levelNumber += 1
+                Reset()
+
+            for laser in level.laserList:
+                if playerRect.clipline((laser.bottomleft, laser.topright)):
+                    Reset()
+
+            mainMenuButton = createButton(window, 'Main Menu', width/16*14,height/16*15,140,40,pg.mouse.get_pos())
+
+            for event in pg.event.get():
+                if event.type == pg.KEYUP:
+                    if event.key == pg.K_ESCAPE:
+                        play = False
+
+                if event.type == pg.QUIT:
+                    run = False
+                    quit()
+
+                if event.type == pg.MOUSEBUTTONUP:
+                    if mainMenuButton.collidepoint(event.pos):
+                        startMenu = True
+                        play = False
+
+            pg.display.flip()
 
 pg.quit()
 
