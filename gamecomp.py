@@ -235,7 +235,6 @@ class Player:
             if self.teleporting == True:
                 self.teleporting = False
 
-
 velocity = .5
 
 run = True
