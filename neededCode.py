@@ -3,12 +3,20 @@ def load(number, level):
 
     levelServer = serverClass.Server('levelDB.db')
 
-    levelServer.executeQuery(f'SELECT BlockList, PortalConnections FROM levels where ID = {number};')
-    results = levelServer.cursor.fetchall()[0]
+    levelServer.executeQuery(f'SELECT BlockList, PortalConnections, LeverConnections, laserBeams, targets, singleMir, doubleMir FROM levels where number = {number};')
+    
+    results = levelServer.cursor.fetchall()[-1]
 
     blockList = results[0]
 
     portalConnections = results[1]
+
+    leverConnections = results[2]
+    
+    laserBeams = results[3]
+    targets = results[4]
+    singleMir = results[5]
+    doubleMir = results[6]
 
     blockList = blockList[2:-2].split('], [')
 
@@ -20,35 +28,108 @@ def load(number, level):
 
     level.tileList = blockList
 
-    portalConnections = portalConnections[2:-2].split('], (')
+    if portalConnections != '{}':
+        portalConnections = portalConnections[2:-2].split('], (')
 
-    for dictnum in range(len(portalConnections)):
-        portalConnections[dictnum] = portalConnections[dictnum].split('): [')
+        for dictnum in range(len(portalConnections)):
+            portalConnections[dictnum] = portalConnections[dictnum].split('): [')
 
-        for valuenum in range(len(portalConnections[dictnum])):
-            portalConnections[dictnum][valuenum] = portalConnections[dictnum][valuenum].split(', ')
+            for valuenum in range(len(portalConnections[dictnum])):
+                portalConnections[dictnum][valuenum] = portalConnections[dictnum][valuenum].split(', ')
 
-            for numnum in range(len(portalConnections[dictnum][valuenum])):
-                portalConnections[dictnum][valuenum][numnum] = int(portalConnections[dictnum][valuenum][numnum])
+                for numnum in range(len(portalConnections[dictnum][valuenum])):
+                    portalConnections[dictnum][valuenum][numnum] = int(portalConnections[dictnum][valuenum][numnum])
 
-    portalDict = {}
-    for dictnum in range(len(portalConnections)):
+        portalDict = {}
+        for dictnum in range(len(portalConnections)):
 
-        portalDict.update({(portalConnections[dictnum][0][0],portalConnections[dictnum][0][1]):portalConnections[dictnum][1]})
+            portalDict.update({(portalConnections[dictnum][0][0],portalConnections[dictnum][0][1]):portalConnections[dictnum][1]})
 
-    level.portalConnections = portalDict
+        level.portalConnections = portalDict
+
+    if leverConnections != '{}':
+        leverConnections = leverConnections[2:-2].split('], (')
+
+        for dictnum in range(len(leverConnections)):
+            leverConnections[dictnum] = leverConnections[dictnum].split('): [')
+
+            leverConnections[dictnum][0] = leverConnections[dictnum][0].split(', ')
+            leverConnections[dictnum][1] = leverConnections[dictnum][1][1:-1].split('], [')
+
+            for valuenum in range(len(leverConnections[dictnum][1])):
+                leverConnections[dictnum][1][valuenum] = leverConnections[dictnum][1][valuenum].split(', ')
+
+                for numnum in range(len(leverConnections[dictnum][1][valuenum])):
+                    leverConnections[dictnum][1][valuenum][numnum] = int(leverConnections[dictnum][1][valuenum][numnum])
+
+            for numnum in range(len(leverConnections[dictnum][0])):
+                leverConnections[dictnum][0][numnum] = int(leverConnections[dictnum][0][numnum])
+
+        leverDict = {}
+        for dictnum in range(len(leverConnections)):
+
+            leverDict.update({(leverConnections[dictnum][0][0],leverConnections[dictnum][0][1]):leverConnections[dictnum][1]})
+        
+        level.leverConnections = leverDict
+
+    if targets != '{}':
+        targets = targets[1:-1].split(', (')
+        for num in range(len(targets)):
+            targets[num] = targets[num][1:-8].split(', ')
+            level.targets.update({(int(targets[num][0]),int(targets[num][1])):Target()})
+
+    if laserBeams != '{}':
+        laserBeams = laserBeams[2:-1].split(', (')
+        for num in range(len(laserBeams)):
+            laserBeams[num] = laserBeams[num].split('): ')
+
+            coords = laserBeams[num][0].split(', ')
+
+            level.laserBeams.update({(int(coords[0]),int(coords[1])):LaserBeam(direction = int(laserBeams[num][1]))})
+
+    if doubleMir != '{}':
+        doubleMir = doubleMir[2:-1].split(', (')
+        for num in range(len(doubleMir)):
+            doubleMir[num] = doubleMir[num].split('): ')
+
+            coords = doubleMir[num][0].split(', ')
+
+
+            level.doubleMir.update({(int(coords[0]),int(coords[1])):LaserBeam(direction = int(doubleMir[num][1]))})
+
+    if singleMir != '{}':
+        singleMir = singleMir[2:-1].split(', (')
+        for num in range(len(singleMir)):
+            singleMir[num] = singleMir[num].split('): ')
+
+            coords = singleMir[num][0].split(', ')
+
+            level.singleMir.update({(int(coords[0]),int(coords[1])):LaserBeam(direction = int(singleMir[num][1]))})
 
 class Level:
 
-    def __init__(self, name, xTiles, yTiles):
-
-        self.name = name
+    def __init__(self, xTiles, yTiles):
 
         self.tileList = [[Tile() for _ in range(yTiles)] for _ in range(xTiles)]
 
         self.portalConnections = {}
+        self.leverConnections = {}
 
-        self.targetList = []
+        self.targets = {}
+        self.laserBeams = {}
+        self.singleMir = {}
+        self.doubleMir = {}
+
+    def changeDicts(self):
+
+        for key, value in self.targets.items():
+            self.targets.update({key : False})
+        for key, value in self.laserBeams.items():
+            self.laserBeams.update({key : value.direction})
+        for key, value in self.singleMir.items():
+            self.singleMir.update({key : value.direction})
+        for key, value in self.doubleMir.items():
+            self.doubleMir.update({key : value.direction})
 
 # I need to create a system where there is a grid of tiles
 # Each tile has its own actual tile that occupies its area
@@ -70,8 +151,8 @@ class Air: # A empty tile
     def playerInteraction(level): # The player can move thorugh the block
         return True
 
-    def laserInteraction(self, laser): # The laser can move through the block
-        pass
+    def laserInteraction(laser): # The laser can move through the block
+        laser.move()
 
 class Block: # A block tile
 
@@ -84,8 +165,8 @@ class Block: # A block tile
     def playerInteraction(level): # The player cant move thorugh the block
         return False
 
-    def laserInteraction(self, laser): # The laser cant move through the block
-        pass
+    def laserInteraction(laser): # The laser cant move through the block
+        laser.stop()
     
 class Glass: # A tile where light can go through but players cant
 
@@ -98,8 +179,8 @@ class Glass: # A tile where light can go through but players cant
     def playerInteraction(level): # The player cant move thorugh the block
         return False
 
-    def laserInteraction(self, laser): # The laser can move through the block
-        pass
+    def laserInteraction(laser): # The laser can move through the block
+        laser.move()
 
 class Smoke: # A tile where players can go through but light cant
 
@@ -112,8 +193,8 @@ class Smoke: # A tile where players can go through but light cant
     def playerInteraction(level): # The player can move thorugh the block
         return True
 
-    def laserInteraction(self, laser): # The laser stops
-        pass
+    def laserInteraction(laser): # The laser stops
+        laser.stop()
 
 class DoubleSidedMirror: # A tile that reflects lasers
 
@@ -123,14 +204,15 @@ class DoubleSidedMirror: # A tile that reflects lasers
 
     tileNum = 4
 
-    def __init__(self):
-        self.direction = 0
+    def __init__(self, direction = 0):
+        self.direction = direction
 
     def playerInteraction(level): # The player cant move thorugh the block
         return False
 
-    def laserInteraction(self, laser): # The laser changes direction by 90 degrees when interacting with this block
-        pass
+    def laserInteraction(laser): # The laser changes direction by 90 degrees when interacting with this block
+        print('double')
+        laser.doubleMirror()
 
     def changeDirection(self):
 
@@ -147,14 +229,14 @@ class OneSidedMirror: # A tile that reflects lasers
 
     tileNum = 5
 
-    def __init__(self):
-        self.direction = 0
+    def __init__(self, direction = 0):
+        self.direction = direction
 
     def playerInteraction(level): # The player cant move thorugh the block
         return False
 
-    def laserInteraction(self, laser): # The laser changes direction by 90 degrees when interacting with this block on the right side, ptherwise it gets stopped
-        pass
+    def laserInteraction(laser): # The laser changes direction by 90 degrees when interacting with this block on the right side, ptherwise it gets stopped
+        laser.singleMirror()
 
     def changeDirection(self):
 
@@ -175,16 +257,14 @@ class Target: # A tile that unlocks the door
 
     tileNum = 6
 
-    def __init__(self, level):
+    def __init__(self):
         self.active = False
-
-        level.targetList.append(self)
 
     def playerInteraction(level): # The player can move thorugh the block
         return True
 
-    def laserInteraction(self, laser): # The laser cant move thorugh the block, but it activates the target
-        pass
+    def laserInteraction(laser): # The laser cant move thorugh the block, but it activates the target
+        laser.hitTarget()
 
 class Lever: # A empty tile
 
@@ -194,40 +274,45 @@ class Lever: # A empty tile
 
     tileNum = 7
 
-    def __init__(self):
-
-        self.active = False
-
-        self.targetBlocks = []
-
     def playerInteraction(level): # The player can move thorugh the block
         return True
 
-    def laserInteraction(self, laser): # The laser can move through the block
-        pass
+    def laserInteraction(laser): # The laser can move through the block
+        laser.move()
 
-    def flipLever(self, level):
-        if self.active == True:
-            self.active = False
+    def flipLever(level, movingTilePos, endTilePos, defaultTile):
+        if level.tileList[movingTilePos[0]][movingTilePos[1]].object == 0 and level.tileList[endTilePos[0]][endTilePos[1]].object != defaultTile:
+            if tileList[level.tileList[endTilePos[0]][endTilePos[1]].object] == DoubleSidedMirror:
+                level.doubleMir.update({(movingTilePos[0],movingTilePos[1]) : DoubleSidedMirror(direction = level.doubleMir[(endTilePos[0],endTilePos[1])].direction)})
+                del level.doubleMir[(endTilePos[0],endTilePos[1])]
 
-            for num in range(len(self.targetBlocks)):
-                level.tileList[self.targetBlocks[num][1][0]][self.targetBlocks[num][1][1]].object = self.targetBlocks[num][0]
-                level.tileList[self.targetBlocks[num][3][0]][self.targetBlocks[num][3][1]].object = Air()
 
-        elif self.active == False:
-            self.active = True
+            elif tileList[level.tileList[endTilePos[0]][endTilePos[1]].object] == OneSidedMirror:
+                level.singleMir.update({(movingTilePos[0],movingTilePos[1]) : OneSidedMirror(direction = level.singleMir[(endTilePos[0], endTilePos[1])].direction)})
+                del level.singleMir[(endTilePos[0],endTilePos[1])]
 
-            for num in range(len(self.targetBlocks)):
-                level.tileList[self.targetBlocks[num][3][0]][self.targetBlocks[num][3][1]].object = self.targetBlocks[num][0]
-                level.tileList[self.targetBlocks[num][1][0]][self.targetBlocks[num][1][1]].object = self.targetBlocks[num][2]
+            elif tileList[level.tileList[endTilePos[0]][endTilePos[1]].object] == LaserBeam:
+                level.laserBeams.update({(movingTilePos[0],movingTilePos[1]) : LaserBeam(direction = level.laserBeams[(endTilePos[0], endTilePos[1])].direction)})
+                del level.laserBeams[(endTilePos[0],endTilePos[1])]
+            
+            level.tileList[movingTilePos[0]][movingTilePos[1]].object = level.tileList[endTilePos[0]][endTilePos[1]].object
+            level.tileList[endTilePos[0]][endTilePos[1]].object = defaultTile
 
-    def changeTargetBlock(self, level, block, startPos, endPos):
-        self.targetBlocks.append([block, startPos, level.tileList[endPos[0]][endPos[1]].object, endPos])
+        else:
+            if tileList[level.tileList[movingTilePos[0]][movingTilePos[1]].object] == DoubleSidedMirror:
+                level.doubleMir.update({(endTilePos[0],endTilePos[1]) : DoubleSidedMirror(direction = level.doubleMir[(movingTilePos[0],movingTilePos[1])].direction)})
+                del level.doubleMir[(movingTilePos[0],movingTilePos[1])]
 
-    def deleteTargetBlock(self, block):
-        for num in range(len(self.targetBlocks)):
-            if self.targetBlocks[num][0] == block:
-                del self.targetBlocks[num]
+            elif tileList[level.tileList[movingTilePos[0]][movingTilePos[1]].object] == OneSidedMirror:
+                level.singleMir.update({(endTilePos[0],endTilePos[1]) : OneSidedMirror(direction = level.singleMir[(movingTilePos[0],movingTilePos[1])].direction)})
+                del level.singleMir[(movingTilePos[0],movingTilePos[1])]
+
+            elif tileList[level.tileList[movingTilePos[0]][movingTilePos[1]].object] == LaserBeam:
+                level.laserBeams.update({(endTilePos[0],endTilePos[1]) : LaserBeam(direction = level.laserBeams[(movingTilePos[0],movingTilePos[1])].direction)})
+                del level.laserBeams[(movingTilePos[0],movingTilePos[1])]
+
+            level.tileList[endTilePos[0]][endTilePos[1]].object = level.tileList[movingTilePos[0]][movingTilePos[1]].object
+            level.tileList[movingTilePos[0]][movingTilePos[1]].object = 0
 
 class LaserBeam:
 
@@ -237,17 +322,14 @@ class LaserBeam:
 
     tileNum = 8
 
-    def __init__(self):
-        self.direction = 0
+    def __init__(self, direction = 0):
+        self.direction = direction
 
     def playerInteraction(level): # The player cant move through a laser beam block
         return False
 
-    def laserInteraciton(self, laser): # The laser wont go through the laser beam block
-        pass
-
-    def shootLaser(self): # shoots a laser in the direction it is facing
-        pass
+    def laserInteraction(laser): # The laser wont go through the laser beam block
+        laser.stop()
 
     def changeDirection(self):
 
@@ -271,8 +353,8 @@ class Entry:
     def playerInteraction(level): # The player can move through an entry way
         return True
 
-    def laserInteraciton(self, laser): # The laser wont go through the entry
-        pass
+    def laserInteraction(laser): # The laser wont go through the entry
+        laser.stop()
 
 class Exit:
 
@@ -283,22 +365,20 @@ class Exit:
     tileNum = 10
 
     def playerInteraction(level): # The player can only interact with an exit after all the target blocks have been activated
-        done = False
-
         targetDone = 0
 
-        for target in level.targetList:
-            if target.active == True:
+        for target in level.targets:
+            if level.targets[target].active == True:
                 targetDone += 1
 
-        if targetDone == len(level.targetList):
+        if targetDone == len(level.targets):
             return True
         
         else:
             return False
 
-    def laserInteraciton(self, laser): # The laser wont go through the exit
-        pass
+    def laserInteraciton(laser): # The laser wont go through the exit
+        laser.stop()
 
 class Portal:
 
@@ -308,15 +388,10 @@ class Portal:
 
     tileNum = 11
 
-    def __init___(self):
-
-        self.pairedPortal = None
-        self.pairedPortalPos = None
-
     def playerInteraction(level): # teleports player to the paired portal 
         return True
 
-    def laserInteraction(self,laser): # teleports laser to the paired portal
-        pass
+    def laserInteraction(laser): # teleports laser to the paired portal
+        laser.portal()
 
 tileList = [Air, Block, Glass, Smoke, DoubleSidedMirror, OneSidedMirror, Target, Lever, LaserBeam, Entry, Exit, Portal]
