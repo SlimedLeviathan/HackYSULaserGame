@@ -69,7 +69,7 @@ def load(number, level):
     print(levelServer.executeQuery(f'SELECT BlockList, PortalConnections, LeverConnections, laserBeams, targets, singleMir, doubleMir FROM levels where number = {number} order by ID asc;'))
     
     results = levelServer.cursor.fetchall()
-
+    
     results = results[-1]
 
     blockList = results[0]

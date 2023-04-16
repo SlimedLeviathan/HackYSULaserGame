@@ -370,17 +370,6 @@ while run == True:
 
             window.fill([0,0,0])
 
-            keysPressed = pg.key.get_pressed()
-
-            if keysPressed[pg.K_LEFT] and tileList[level.tileList[int((playerRect.left - levelWidthPadding) / blockLength)][int((playerRect.bottom - levelHeightPadding) / blockLength) - 1].object].playerInteraction(level) and int((playerRect.right - levelWidthPadding) / blockLength) > 0:
-                player.x -= velocity
-
-            if keysPressed[pg.K_RIGHT] and tileList[level.tileList[int((playerRect.right - levelWidthPadding) / blockLength)][int((playerRect.bottom - levelHeightPadding) / blockLength) - 1].object].playerInteraction(level) and int((playerRect.right - levelWidthPadding + 2) / blockLength) <= len(level.tileList) - 1:
-                player.x += velocity
-
-            if keysPressed[pg.K_SPACE]:
-                player.jump()
-
             for key,value in level.laserBeams.items():
                 Laser(key[0],key[1], value.direction)
 
@@ -426,6 +415,32 @@ while run == True:
             centerCoords = [int(playerCenter[0] / blockLength), int(playerCenter[1] / blockLength)]
             
             player.gravity()
+
+            keysPressed = pg.key.get_pressed()
+
+            if tileList[level.tileList[int((playerRect.left - levelWidthPadding) / blockLength)][int((playerRect.bottom - levelHeightPadding) / blockLength) - 1].object] == Exit:
+                if keysPressed[pg.K_LEFT] and not tileList[level.tileList[int((playerRect.left - levelWidthPadding) / blockLength)][int((playerRect.bottom - levelHeightPadding) / blockLength) - 1].object].playerInteraction(level) and int((playerRect.right - levelWidthPadding) / blockLength) > 0:
+                    player.x -= velocity
+
+                if keysPressed[pg.K_RIGHT] and tileList[level.tileList[int((playerRect.right - levelWidthPadding) / blockLength)][int((playerRect.bottom - levelHeightPadding) / blockLength) - 1].object].playerInteraction(level) and int((playerRect.right - levelWidthPadding + 2) / blockLength) <= len(level.tileList) - 1:
+                    player.x += velocity
+
+            if tileList[level.tileList[int((playerRect.right - levelWidthPadding) / blockLength)][int((playerRect.bottom - levelHeightPadding) / blockLength) - 1].object] == Exit:
+                if keysPressed[pg.K_LEFT] and tileList[level.tileList[int((playerRect.left - levelWidthPadding) / blockLength)][int((playerRect.bottom - levelHeightPadding) / blockLength) - 1].object].playerInteraction(level) and int((playerRect.right - levelWidthPadding) / blockLength) > 0:
+                    player.x -= velocity
+                
+                if keysPressed[pg.K_RIGHT] and tileList[level.tileList[int((playerRect.right - levelWidthPadding) / blockLength)][int((playerRect.bottom - levelHeightPadding) / blockLength) - 1].object].playerInteraction(level) and int((playerRect.right - levelWidthPadding + 2) / blockLength) <= len(level.tileList) - 1:
+                    player.x += velocity
+
+            else:
+                if keysPressed[pg.K_LEFT] and tileList[level.tileList[int((playerRect.left - levelWidthPadding) / blockLength)][int((playerRect.bottom - levelHeightPadding) / blockLength) - 1].object].playerInteraction(level) and int((playerRect.right - levelWidthPadding) / blockLength) > 0:
+                    player.x -= velocity
+
+                if keysPressed[pg.K_RIGHT] and tileList[level.tileList[int((playerRect.right - levelWidthPadding) / blockLength)][int((playerRect.bottom - levelHeightPadding) / blockLength) - 1].object].playerInteraction(level) and int((playerRect.right - levelWidthPadding + 2) / blockLength) <= len(level.tileList) - 1:
+                    player.x += velocity
+
+            if keysPressed[pg.K_SPACE]:
+                player.jump()
 
             for laser in level.laserList:
                 window.blit(level.laserSurface,[0,0,width,height])
