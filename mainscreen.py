@@ -49,7 +49,7 @@ def mainMenu(screen):
 
             mouse = pg.mouse.get_pos()
 
-            screen.blit(font.render("Title", True, color_lighter), (width/2- len('Tittle') * 10,height/16)) 
+            screen.blit(font.render("Guiding Light", True, color_lighter), (width/2- len('GUiding Light') * 10,height/16)) 
             quitbutton = createButton(screen,'Quit',width/8*7,height/16*14,140,40,mouse)
             newLevelButton = createButton(screen,'Create Level',width/8*5,height/16*14,140,40,mouse)
             b1 = createButton(screen,'1',width/8,height/4,140,40,mouse)
