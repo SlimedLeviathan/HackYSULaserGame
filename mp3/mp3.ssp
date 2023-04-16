@@ -1,0 +1,458 @@
+{
+	"version": 74,
+	"bpm": 100.0,
+	"play_focus_area": "arrangement",
+	"audio_deck_color_collection":
+	[
+		"2bb673ff",
+		"dc1d49ff",
+		"16308bff",
+		"ce359eff",
+		"8dc63fff",
+		"1dbebdff",
+		"f8821aff",
+		"4eb648ff",
+		"fac313ff",
+		"db4e27ff",
+		"1fad26ff",
+		"173ba2ff",
+		"006838ff",
+		"474ba0ff",
+		"0f88caff",
+		"c02626ff"
+	],
+	"scene_decks":
+	[
+		{
+			"type": "instrument",
+			"name": "Acoustic Piano",
+			"channel_strip":
+			{
+				"volume": 0.0081967126076165787,
+				"post_fader_effects":
+				[
+					{
+						"effect": ":/effects/Studda Fader.serato-effect",
+						"value": 0.0018518518518518823,
+						"on": false
+					},
+					{
+						"effect": ":/effects/Light Sizzle Crusher.serato-effect",
+						"value": 0.5,
+						"on": false
+					},
+					{
+						"effect": ":/effects/Dry Reverb.serato-effect",
+						"value": 0.0,
+						"on": false,
+						"mode": 2
+					}
+				]
+			},
+			"release": 1.0,
+			"instrument_file": "content:///Serato%20Packs/Core/Instruments/Acoustic%20Piano/Acoustic%20Piano.serato-instrument",
+			"play_in_key": false,
+			"sequence_view":
+			{
+				"height": 426.79999999999995,
+				"steps_per_quarter_note": 8
+			},
+			"deck_source_properties_changed": true
+		}
+	],
+	"scenes":
+	[
+		{
+			"name": "Intro",
+			"deck_sequences":
+			[
+				{
+					"notes":
+					[
+						{
+							"start": 1440.0,
+							"duration": 1182.0,
+							"channel": 0,
+							"number": 71,
+							"velocity": 100
+						},
+						{
+							"start": 3120.0,
+							"duration": 558.0,
+							"channel": 0,
+							"number": 72,
+							"velocity": 100
+						},
+						{
+							"start": 2400.0,
+							"duration": 1440.0,
+							"channel": 0,
+							"number": 65,
+							"velocity": 100
+						},
+						{
+							"start": 480.0,
+							"duration": 1924.0,
+							"channel": 0,
+							"number": 60,
+							"velocity": 100
+						},
+						{
+							"start": 0.0,
+							"duration": 1241.0,
+							"channel": 0,
+							"number": 69,
+							"velocity": 100
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Scene 2",
+			"deck_sequences":
+			[
+				{
+					"notes":
+					[
+						{
+							"start": 480.0,
+							"duration": 949.0,
+							"channel": 0,
+							"number": 69,
+							"velocity": 100
+						},
+						{
+							"start": 1440.0,
+							"duration": 1133.0,
+							"channel": 0,
+							"number": 71,
+							"velocity": 100
+						},
+						{
+							"start": 480.0,
+							"duration": 3360.0,
+							"channel": 0,
+							"number": 62,
+							"velocity": 100
+						},
+						{
+							"start": 2400.0,
+							"duration": 480.0,
+							"channel": 0,
+							"number": 72,
+							"velocity": 100
+						},
+						{
+							"start": 3120.0,
+							"duration": 480.0,
+							"channel": 0,
+							"number": 71,
+							"velocity": 100
+						},
+						{
+							"start": 0.0,
+							"duration": 360.0,
+							"channel": 0,
+							"number": 70,
+							"velocity": 100
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Scene 3",
+			"deck_sequences":
+			[
+				{
+					"notes":
+					[
+						{
+							"start": 480.0,
+							"duration": 949.0,
+							"channel": 0,
+							"number": 69,
+							"velocity": 100
+						},
+						{
+							"start": 1440.0,
+							"duration": 1133.0,
+							"channel": 0,
+							"number": 71,
+							"velocity": 100
+						},
+						{
+							"start": 480.0,
+							"duration": 3360.0,
+							"channel": 0,
+							"number": 62,
+							"velocity": 100
+						},
+						{
+							"start": 2400.0,
+							"duration": 480.0,
+							"channel": 0,
+							"number": 72,
+							"velocity": 100
+						},
+						{
+							"start": 3120.0,
+							"duration": 480.0,
+							"channel": 0,
+							"number": 71,
+							"velocity": 100
+						},
+						{
+							"start": 3600.0,
+							"duration": 240.0,
+							"channel": 0,
+							"number": 69,
+							"velocity": 100
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Scene 4",
+			"deck_sequences":
+			[
+				{
+					"notes":
+					[
+						{
+							"start": 960.0,
+							"duration": 741.0,
+							"channel": 0,
+							"number": 69,
+							"velocity": 100
+						},
+						{
+							"start": 2400.0,
+							"duration": 280.0,
+							"channel": 0,
+							"number": 71,
+							"velocity": 100
+						},
+						{
+							"start": 2880.0,
+							"duration": 384.0,
+							"channel": 0,
+							"number": 72,
+							"velocity": 100
+						},
+						{
+							"start": 960.0,
+							"duration": 2880.0,
+							"channel": 0,
+							"number": 64,
+							"velocity": 100
+						},
+						{
+							"start": 3600.0,
+							"duration": 240.0,
+							"channel": 0,
+							"number": 72,
+							"velocity": 100
+						},
+						{
+							"start": 0.0,
+							"duration": 600.0,
+							"channel": 0,
+							"number": 67,
+							"velocity": 100
+						},
+						{
+							"start": 1920.0,
+							"duration": 360.0,
+							"channel": 0,
+							"number": 69,
+							"velocity": 100
+						}
+					]
+				}
+			]
+		}
+	],
+	"arrangement":
+	{
+		"horizontal_scroll_position": 0.25538793103448276,
+		"loop_end": 960.0,
+		"tracks":
+		[
+			{
+				"name": "",
+				"type": "master",
+				"channel_strip":
+				{
+					"post_fader_effects":
+					[
+						{
+							"effect": ":/effects/Brightener EQ.serato-effect",
+							"value": 0.5,
+							"on": false
+						},
+						{
+							"effect": ":/effects/Master Compressor.serato-effect",
+							"value": 0.0,
+							"on": false
+						},
+						{
+							"effect": ":/effects/Limiter.serato-effect",
+							"value": 0.0,
+							"on": false
+						}
+					]
+				},
+				"view":
+				{
+					"collapsed": true,
+					"waveform_zoom": 456.0
+				}
+			},
+			{
+				"name": "",
+				"type": "scene",
+				"clips":
+				[
+					{
+						"start": 0,
+						"length": 3840,
+						"scene_slot_number": 0
+					},
+					{
+						"start": 3840,
+						"length": 3840,
+						"scene_slot_number": 1
+					},
+					{
+						"start": 7680,
+						"length": 3840,
+						"scene_slot_number": 2
+					},
+					{
+						"start": 11520,
+						"length": 3840,
+						"scene_slot_number": 3
+					},
+					{
+						"start": 15360,
+						"length": 3840,
+						"scene_slot_number": 2
+					},
+					{
+						"start": 19200,
+						"length": 3840,
+						"scene_slot_number": 0
+					},
+					{
+						"start": 23040,
+						"length": 3840,
+						"scene_slot_number": 3
+					},
+					{
+						"start": 26880,
+						"length": 3840,
+						"scene_slot_number": 3
+					},
+					{
+						"start": 30720,
+						"length": 3840,
+						"scene_slot_number": 1
+					},
+					{
+						"start": 34560,
+						"length": 3840,
+						"scene_slot_number": 0
+					},
+					{
+						"start": 38400,
+						"length": 3840,
+						"scene_slot_number": 1
+					},
+					{
+						"start": 42240,
+						"length": 3840,
+						"scene_slot_number": 2
+					},
+					{
+						"start": 46080,
+						"length": 3840,
+						"scene_slot_number": 3
+					},
+					{
+						"start": 49920,
+						"length": 3840,
+						"scene_slot_number": 2
+					},
+					{
+						"start": 53760,
+						"length": 3840,
+						"scene_slot_number": 0
+					},
+					{
+						"start": 57600,
+						"length": 3840,
+						"scene_slot_number": 3
+					},
+					{
+						"start": 61440,
+						"length": 3840,
+						"scene_slot_number": 3
+					},
+					{
+						"start": 65280,
+						"length": 3840,
+						"scene_slot_number": 0
+					},
+					{
+						"start": 69120,
+						"length": 3840,
+						"scene_slot_number": 1
+					},
+					{
+						"start": 72960,
+						"length": 3840,
+						"scene_slot_number": 2
+					},
+					{
+						"start": 76800,
+						"length": 3840,
+						"scene_slot_number": 3
+					},
+					{
+						"start": 80640,
+						"length": 3840,
+						"scene_slot_number": 2
+					},
+					{
+						"start": 84480,
+						"length": 3840,
+						"scene_slot_number": 0
+					},
+					{
+						"start": 88320,
+						"length": 3840,
+						"scene_slot_number": 3
+					},
+					{
+						"start": 92160,
+						"length": 3840,
+						"scene_slot_number": 3
+					}
+				],
+				"channel_strip":
+				{
+					"solo": true
+				}
+			}
+		]
+	},
+	"view":
+	{
+		"deck_library_ratio": 0.25934065934065931,
+		"show_arrangement": true,
+		"selected_scene_index": 3
+	}
+}

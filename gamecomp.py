@@ -145,6 +145,3 @@ while run == True:
 
 pg.quit()
 
-
-
-
