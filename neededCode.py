@@ -3,9 +3,12 @@ def load(number, level):
 
     levelServer = serverClass.Server('levelDB.db')
 
-    levelServer.executeQuery(f'SELECT BlockList FROM levels where ID = {number};')
+    levelServer.executeQuery(f'SELECT BlockList, PortalConnections FROM levels where ID = {number};')
+    results = levelServer.cursor.fetchall()[0]
 
-    blockList = levelServer.cursor.fetchall()[0][0]
+    blockList = results[0]
+
+    portalConnections = results[1]
 
     blockList = blockList[2:-2].split('], [')
 
@@ -17,6 +20,24 @@ def load(number, level):
 
     level.tileList = blockList
 
+    portalConnections = portalConnections[2:-2].split('], (')
+
+    for dictnum in range(len(portalConnections)):
+        portalConnections[dictnum] = portalConnections[dictnum].split('): [')
+
+        for valuenum in range(len(portalConnections[dictnum])):
+            portalConnections[dictnum][valuenum] = portalConnections[dictnum][valuenum].split(', ')
+
+            for numnum in range(len(portalConnections[dictnum][valuenum])):
+                portalConnections[dictnum][valuenum][numnum] = int(portalConnections[dictnum][valuenum][numnum])
+
+    portalDict = {}
+    for dictnum in range(len(portalConnections)):
+
+        portalDict.update({(portalConnections[dictnum][0][0],portalConnections[dictnum][0][1]):portalConnections[dictnum][1]})
+
+    level.portalConnections = portalDict
+
 class Level:
 
     def __init__(self, name, xTiles, yTiles):
@@ -24,6 +45,8 @@ class Level:
         self.name = name
 
         self.tileList = [[Tile() for _ in range(yTiles)] for _ in range(xTiles)]
+
+        self.portalConnections = {}
 
         self.targetList = []
 
@@ -44,7 +67,7 @@ class Air: # A empty tile
 
     tileNum = 0
 
-    def playerInteraction(): # The player can move thorugh the block
+    def playerInteraction(level): # The player can move thorugh the block
         return True
 
     def laserInteraction(self, laser): # The laser can move through the block
@@ -58,7 +81,7 @@ class Block: # A block tile
 
     tileNum = 1
 
-    def playerInteraction(): # The player cant move thorugh the block
+    def playerInteraction(level): # The player cant move thorugh the block
         return False
 
     def laserInteraction(self, laser): # The laser cant move through the block
@@ -72,7 +95,7 @@ class Glass: # A tile where light can go through but players cant
 
     tileNum = 2
 
-    def playerInteraction(): # The player cant move thorugh the block
+    def playerInteraction(level): # The player cant move thorugh the block
         return False
 
     def laserInteraction(self, laser): # The laser can move through the block
@@ -86,7 +109,7 @@ class Smoke: # A tile where players can go through but light cant
 
     tileNum = 3
 
-    def playerInteraction(): # The player can move thorugh the block
+    def playerInteraction(level): # The player can move thorugh the block
         return True
 
     def laserInteraction(self, laser): # The laser stops
@@ -103,7 +126,7 @@ class DoubleSidedMirror: # A tile that reflects lasers
     def __init__(self):
         self.direction = 0
 
-    def playerInteraction(): # The player cant move thorugh the block
+    def playerInteraction(level): # The player cant move thorugh the block
         return False
 
     def laserInteraction(self, laser): # The laser changes direction by 90 degrees when interacting with this block
@@ -127,7 +150,7 @@ class OneSidedMirror: # A tile that reflects lasers
     def __init__(self):
         self.direction = 0
 
-    def playerInteraction(): # The player cant move thorugh the block
+    def playerInteraction(level): # The player cant move thorugh the block
         return False
 
     def laserInteraction(self, laser): # The laser changes direction by 90 degrees when interacting with this block on the right side, ptherwise it gets stopped
@@ -157,7 +180,7 @@ class Target: # A tile that unlocks the door
 
         level.targetList.append(self)
 
-    def playerInteraction(): # The player can move thorugh the block
+    def playerInteraction(level): # The player can move thorugh the block
         return True
 
     def laserInteraction(self, laser): # The laser cant move thorugh the block, but it activates the target
@@ -177,7 +200,7 @@ class Lever: # A empty tile
 
         self.targetBlocks = []
 
-    def playerInteraction(): # The player can move thorugh the block
+    def playerInteraction(level): # The player can move thorugh the block
         return True
 
     def laserInteraction(self, laser): # The laser can move through the block
@@ -217,7 +240,7 @@ class LaserBeam:
     def __init__(self):
         self.direction = 0
 
-    def playerInteraction(): # The player cant move through a laser beam block
+    def playerInteraction(level): # The player cant move through a laser beam block
         return False
 
     def laserInteraciton(self, laser): # The laser wont go through the laser beam block
@@ -245,7 +268,7 @@ class Entry:
 
     tileNum = 9
 
-    def playerInteraction(): # The player cant move through an entry way
+    def playerInteraction(level): # The player can move through an entry way
         return True
 
     def laserInteraciton(self, laser): # The laser wont go through the entry
@@ -259,7 +282,7 @@ class Exit:
 
     tileNum = 10
 
-    def playerInteraction(self, level): # The player can only interact with an exit after all the target blocks have been activated
+    def playerInteraction(level): # The player can only interact with an exit after all the target blocks have been activated
         done = False
 
         targetDone = 0
@@ -290,28 +313,10 @@ class Portal:
         self.pairedPortal = None
         self.pairedPortalPos = None
 
-        self.direction = 0
-
-    def playerInteraction(): # teleports player to the paired portal 
+    def playerInteraction(level): # teleports player to the paired portal 
         return True
 
     def laserInteraction(self,laser): # teleports laser to the paired portal
         pass
-
-    def pairPortal(self, portal, portalPos):
-        
-        self.pairedPortal = portal
-        self.pairedPortalPos = portalPos
-
-    def changeDirection(self):
-
-        if self.direction == 0:
-            self.direction = 1
-        elif self.direction == 1:
-            self.direction = 2
-        elif self.direction == 2:
-            self.direction = 3
-        elif self.direction == 3:
-            self.direction = 0
 
 tileList = [Air, Block, Glass, Smoke, DoubleSidedMirror, OneSidedMirror, Target, Lever, LaserBeam, Entry, Exit, Portal]

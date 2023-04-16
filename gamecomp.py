@@ -1,8 +1,7 @@
 import pygame
-pg = pygame 
-from pygame.locals import *
+pg = pygame
 
-from neededCode import load, Level, tileList
+from neededCode import *
 
 import tkinter as tk
 root = tk.Tk()
@@ -13,7 +12,7 @@ height = root.winfo_screenheight()
 root.quit()
 
 xPadding = 0
-yPadding = 100
+yPadding = 50
 
 gameWidth = width - xPadding * 2
 gameHeight = height - yPadding * 2
@@ -32,6 +31,7 @@ class Player:
         self.jumpStart = None
         self.jumpAmount = 0
         self.maxJump = 2
+        self.teleporting = False
 
     def jump(self):
         if self.isjummping == False and self.falling == False:
@@ -46,7 +46,7 @@ class Player:
         leftBlockCoords = [int(playerBottomLeft[0] / blockLength), int(playerBottomLeft[1] / blockLength)]
         rightBlockCoords = [int(playerBottomRight[0] / blockLength), int(playerBottomRight[1] / blockLength)] 
 
-        self.falling = tileList[level.tileList[leftBlockCoords[0]][leftBlockCoords[1]].object].playerInteraction() and tileList[level.tileList[rightBlockCoords[0]][rightBlockCoords[1]].object].playerInteraction()
+        self.falling = tileList[level.tileList[leftBlockCoords[0]][leftBlockCoords[1]].object].playerInteraction(level) and tileList[level.tileList[rightBlockCoords[0]][rightBlockCoords[1]].object].playerInteraction(level)
 
         if self.falling == True and self.isjummping == False:
             player.y += 1
@@ -54,10 +54,30 @@ class Player:
         elif self.isjummping == True:
             player.y -= 1
 
-            print(int((playerRect.bottom - levelHeightPadding) / blockLength))
+            currentHeight = int((playerRect.bottom - levelHeightPadding) / blockLength)
+            
+            if currentHeight <= 0:
+                self.y = levelHeightPadding
 
-            if int((playerRect.bottom - levelHeightPadding) / blockLength) - self.jumpStart < self.jumpAmount:
+            elif self.jumpStart - self.maxJump > currentHeight or keysPressed[pg.K_SPACE] == False or not tileList[level.tileList[int((playerRect.left - levelWidthPadding) / blockLength)][currentHeight - 1].object].playerInteraction(level) or not tileList[level.tileList[int((playerRect.right - levelWidthPadding) / blockLength)][currentHeight - 1].object].playerInteraction(level):
                 self.isjummping = False 
+
+        playerCenter = [playerRect.center[0] - levelWidthPadding,playerRect.center[1] - levelHeightPadding]
+        centerCoords = [int(playerCenter[0] / blockLength), int(playerCenter[1] / blockLength)]
+
+        if tileList[level.tileList[centerCoords[0]][centerCoords[1]].object] == Portal:
+            if self.teleporting == False:
+                newCoords = level.portalConnections[centerCoords[0], centerCoords[1]]
+
+                self.x = levelWidthPadding + (newCoords[0] * (levelWidth / len(level.tileList)))
+                self.y = levelHeightPadding + (newCoords[1] * (levelHeight / len(level.tileList[0])))
+
+                self.teleporting = True
+
+        else:
+            if self.teleporting == True:
+                self.teleporting = False
+
 
 velocity = .5
 
@@ -88,12 +108,11 @@ for xNum in range(len(level.tileList)):
             y = yNum
             break
 
-player = Player(`levelWidthPadding + (x * (levelWidth / len(level.tileList))), yPadding + levelHeightPadding + (y * (levelHeight / len(level.tileList[0]))))
+player = Player(levelWidthPadding + (x * (levelWidth / len(level.tileList))), levelHeightPadding + (y * (levelHeight / len(level.tileList[0]))))
 
 while run == True:
 
     window.fill([0,0,0])
-    #window.fill(225, 225, 225)
 
     keysPressed = pg.key.get_pressed()
 
@@ -101,18 +120,15 @@ while run == True:
 
     for xNum in range(len(level.tileList)):
         for yNum in range(len(level.tileList[0])):
-            pg.draw.rect(window, tileList[level.tileList[xNum][yNum].object].color, [`levelWidthPadding + (xNum * (levelWidth / len(level.tileList))), yPadding + levelHeightPadding + (yNum * (levelHeight / len(level.tileList[0]))), blockLength, blockLength])
+            pg.draw.rect(window, tileList[level.tileList[xNum][yNum].object].color, [levelWidthPadding + (xNum * (levelWidth / len(level.tileList))), levelHeightPadding + (yNum * (levelHeight / len(level.tileList[0]))), blockLength, blockLength])
     
-    playerSurface = pg.Surface([blockLength,blockLength])
-
-    playerSurface.blit(pg.transform.scale(Player_image, [blockLength, blockLength]),[0,0])
-    playerRect = window.blit(playerSurface, (player.x, player.y))
+    playerRect = window.blit(pg.transform.scale(Player_image, [blockLength, blockLength]), (player.x, player.y))
 
     player.gravity()
 
-    if keysPressed[pg.K_LEFT]:
+    if keysPressed[pg.K_LEFT] and tileList[level.tileList[int((playerRect.left - levelWidthPadding) / blockLength)][int((playerRect.bottom - levelHeightPadding) / blockLength) - 1].object].playerInteraction(level) and int((playerRect.right - levelWidthPadding) / blockLength) > 0:
         player.x -= velocity
-    if keysPressed[pg.K_RIGHT]:
+    if keysPressed[pg.K_RIGHT] and tileList[level.tileList[int((playerRect.right - levelWidthPadding) / blockLength)][int((playerRect.bottom - levelHeightPadding) / blockLength) - 1].object].playerInteraction(level) and int((playerRect.right - levelWidthPadding + 1) / blockLength) <= len(level.tileList) - 1:
         player.x += velocity 
     if keysPressed[pg.K_SPACE]:
         player.jump()
