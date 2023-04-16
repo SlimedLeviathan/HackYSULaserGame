@@ -29,7 +29,6 @@ class Player:
         self.isjummping = False
         self.falling = False
         self.jumpStart = None
-        self.jumpAmount = 0
         self.maxJump = 2
         self.teleporting = False
 
