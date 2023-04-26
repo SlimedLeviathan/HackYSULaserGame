@@ -245,6 +245,7 @@ class Laser:
         pass
 
     def hitTarget(self):
+        print(level.targets)
         level.targets[(self.x,self.y)].active = True
 
 class Player:

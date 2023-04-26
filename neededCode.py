@@ -139,9 +139,11 @@ def load(number, level):
 
     targetDict = {}
     if targets != '{}':
-        targets = targets[1:-1].split(', (')
+        print(targets)
+        targets = targets[2:-1].split(', (')
+        print(targets)
         for num in range(len(targets)):
-            targets[num] = targets[num][1:-8].split(', ')
+            targets[num] = targets[num][:-8].split(', ')
             targetDict.update({(int(targets[num][0]),int(targets[num][1])):Target()})
 
     level.targets = targetDict

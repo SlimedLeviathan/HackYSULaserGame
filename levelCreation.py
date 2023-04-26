@@ -61,6 +61,7 @@ def save(level, loadSelect):
 
     for key, value in targets.items():
         targets.update({key : False})
+        print(targets)
     for key, value in laserBeams.items():
         laserBeams.update({key : value.direction})
     for key, value in singleMir.items():
@@ -158,7 +159,6 @@ def createLevel(screen):
 
         for num in range(int(len(tileList[selectedTile].description)/charactersPRow)):
             screen.blit(smallfont.render(tileList[selectedTile].description[descNum * charactersPRow: (descNum + 1) * charactersPRow], True, [255,255,255]), [width / 8 * 6, yPadding / 8 + num * 20])
-            print(tileList[selectedTile].description[descNum * charactersPRow: (descNum + 1) * charactersPRow])
             descNum += 1
 
 
