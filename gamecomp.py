@@ -355,10 +355,10 @@ while run == True:
 
     elif startMenu == False:
 
-        soundtrack = pg.mixer.Sound('music.wav')
+        soundtrack = pg.mixer.Sound('turttlepond.mp3')
         
         soundtrack.play()
-        
+
         while play == True:
 
 
